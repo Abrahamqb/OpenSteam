@@ -1,0 +1,95 @@
+﻿<Window x:Class="OpenSteam.OnlineLua"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Cargador de Lua Online" Height="450" Width="450"
+        WindowStartupLocation="CenterOwner" Background="#0B0E14" ResizeMode="NoResize">
+
+    <Grid Margin="25">
+        <StackPanel VerticalAlignment="Center">
+
+            <TextBlock Text="SteamLuaOnline" 
+                       Foreground="#47C1FF" 
+                       FontSize="38" 
+                       FontWeight="ExtraBold" 
+                       HorizontalAlignment="Center" 
+                       Margin="0,0,0,30">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="15" Color="#47C1FF" Opacity="0.3" ShadowDepth="0"/>
+                </TextBlock.Effect>
+            </TextBlock>
+
+            <Border Background="#161B22" 
+                    CornerRadius="12" 
+                    BorderBrush="#30363D" 
+                    BorderThickness="1" 
+                    Padding="15"
+                    MaxWidth="380">
+                <StackPanel>
+                    <Grid Margin="0,0,0,15">
+                        <TextBox x:Name="SearchBox"
+                                 Background="#0D1117" 
+                                 Foreground="White" 
+                                 FontSize="16" 
+                                 Padding="15,10"
+                                 BorderBrush="#30363D"
+                                 BorderThickness="1">
+                            <TextBox.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </TextBox.Resources>
+                        </TextBox>
+
+                        <TextBlock IsHitTestVisible="False" 
+                                   Text="Try: AppID..." 
+                                   VerticalAlignment="Center" 
+                                   HorizontalAlignment="Left" 
+                                   Margin="18,0,0,0" 
+                                   Foreground="#484F58" 
+                                   FontSize="16">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=SearchBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+
+                    <Button x:Name="ButtonSearch" Content="Buscar en la Nube" 
+                            Height="45" 
+                            Background="#007ACC" 
+                            Foreground="White" 
+                            FontWeight="Bold"
+                            FontSize="14"
+                            Cursor="Hand"
+                            BorderThickness="0" Click="Button_Click">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <TextBlock HorizontalAlignment="Center" Margin="0,15,0,0" FontSize="12">
+                <Run Text="Tip:" Foreground="#8B949E" FontWeight="Bold"/>
+                <Run Text=" Puedes buscar en Steamdb para saber el AppID." Foreground="#484F58"/>
+            </TextBlock>
+
+            <Button Content="Regresar" 
+                    Margin="0,40,0,0"
+                    HorizontalAlignment="Center" 
+                    Background="Transparent" 
+                    Foreground="#58A6FF" 
+                    BorderThickness="0"
+                    Cursor="Hand" Click="Button_Click_1"/>
+        </StackPanel>
+        <TextBlock HorizontalAlignment="Left" Margin="50,85,0,0" TextWrapping="Wrap" Text="Power by Kernelos.org" VerticalAlignment="Top" Foreground="#FF47C1FF"/>
+    </Grid>
+</Window>

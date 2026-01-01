@@ -1,0 +1,121 @@
+﻿<Window x:Class="OpenSteam.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="OpenSteam Manager" Height="480" Width="750"
+        WindowStartupLocation="CenterScreen" Background="#0F0F0F" 
+        ResizeMode="NoResize" WindowStyle="ThreeDBorderWindow">
+
+    <Window.Resources>
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="10" 
+                                BorderThickness="1" 
+                                BorderBrush="#33FFFFFF">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#44FFFFFF"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#007ACC"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PrimaryAction" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#007ACC" Offset="0"/>
+                        <GradientStop Color="#005A9E" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DangerAction" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="BorderBrush" Value="#44FF4444"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#4D2B2B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Canvas IsHitTestVisible="False">
+            <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Left="-150" Canvas.Top="-150">
+                <Ellipse.Effect>
+                    <BlurEffect Radius="100"/>
+                </Ellipse.Effect>
+            </Ellipse>
+            <Ellipse Fill="#0D007ACC" Width="300" Height="300" Canvas.Right="-50" Canvas.Bottom="-50"/>
+        </Canvas>
+
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-20,0,0">
+
+            <Image Source="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" Width="55" Height="55" Margin="0,0,0,10">
+                <Image.Effect>
+                    <DropShadowEffect BlurRadius="15" Color="#007ACC" ShadowDepth="0" Opacity="0.5"/>
+                </Image.Effect>
+            </Image>
+
+            <TextBlock Text="OPENSTEAM MANAGER" Foreground="White" FontSize="22" FontWeight="ExtraBold" HorizontalAlignment="Center">
+                <TextBlock.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+                </TextBlock.Effect>
+            </TextBlock>
+
+            <TextBlock Text="v2.0 Beta | .NET 9 Edition" Foreground="#66FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,25"/>
+
+            <UniformGrid Columns="3">
+                <Button x:Name="patchButton" Content="Parchear" Style="{StaticResource PrimaryAction}" Width="145" Height="45" Click="patchButton_Click"/>
+                <Button x:Name="DeletePatchButton" Content="Borrar Parche" Style="{StaticResource DangerAction}" Width="145" Height="45" Click="DeletePatchButton_Click"/>
+                <Button x:Name="ResetSteam" Content="Reiniciar Steam" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ResetSteam_Click"/>
+                <Button x:Name="Plugins" Content="Kernel + Millenium" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Plugins_Click"/>
+                <Button x:Name="ManualLua" Content="LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ManualLua_Click"/>
+                <Button Content="Información" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Button_Click"/>
+            </UniformGrid>
+
+            <Button x:Name="OnlineLua" Content="⚡ OnlineLua Store" Style="{StaticResource PrimaryAction}" Width="459" Height="50" Margin="0,10,0,0" Click="OnlineLua_Click">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
+                        <GradientStop Color="#007ACC" Offset="0"/>
+                        <GradientStop Color="#6A2B9A" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+
+            <Border Background="#0FFFFFFF" CornerRadius="8" Margin="0,30,0,0" Padding="15,8" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="StatusDot" Fill="#00FF00" Width="8" Height="8" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="ParcheEstado" Text="Estado: Sistema Listo" Foreground="#88FFFFFF" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>
