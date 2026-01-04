@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,41 +16,33 @@ namespace OpenSteam.Service
 {
     public class Plugins
     {
-        public void ManagePluginsInstall()
+        public async Task ManagePluginsInstall()
         {
             try
             {
-                string command = "iwr -useb 'https://steambrew.app/install.ps1' | iex";
-
-                byte[] commandBytes = System.Text.Encoding.Unicode.GetBytes(command);
-                string encodedCommand = Convert.ToBase64String(commandBytes);
-
-                ProcessStartInfo psi = new ProcessStartInfo
+                using (HttpClient client = new HttpClient())
                 {
-                    FileName = "powershell.exe",
-                    Arguments = $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encodedCommand}",
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    RedirectStandardOutput = false,
-                    RedirectStandardError = false,
-                    Verb = "runas"
-                };
+                    byte[] millenniumInstaller = await client.GetByteArrayAsync("https://github.com/SteamClientHomebrew/Installer/releases/latest/download/MillenniumInstaller-Windows.exe");
+                    string installerPath = Path.Combine(Path.GetTempPath(), "MillenniumInstaller.exe");
 
-                using (Process proceso = Process.Start(psi))
-                {
-                    proceso.WaitForExit();
+                    File.WriteAllBytes(installerPath, millenniumInstaller);
 
-                    if (proceso.ExitCode == 0)
+                    ProcessStartInfo startInfo = new ProcessStartInfo
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        FileName = installerPath,
+                        UseShellExecute = true,
+                        CreateNoWindow = false
+                    };
+                    Process p = Process.Start(startInfo);
+
+                    if (p != null)
+                    {
+                        await Task.Run(() =>
                         {
-                            NotificationWindow win = new NotificationWindow("¡Instalando Millennium!", 2);
-                            win.Show();
+                            p.WaitForExit();
                         });
-                    }
-                    else
-                    {
-                        MessageBox.Show($"El proceso terminó con código: {proceso.ExitCode}. Intenta ejecutar como administrador.");
+                        NotificationWindow win = new NotificationWindow("¡Millennium instalado!", 2);
+                        win.Show();
                     }
                 }
             }

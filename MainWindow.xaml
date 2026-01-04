@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         Title="OpenSteam Manager" Height="480" Width="750"
         WindowStartupLocation="CenterScreen" Background="#0F0F0F" 
-        ResizeMode="NoResize" WindowStyle="ThreeDBorderWindow">
+        ResizeMode="NoResize" WindowStyle="None" MouseDown="Drag_MouseDown">
 
     <Window.Resources>
         <Style x:Key="ModernButtonStyle" TargetType="Button">
@@ -64,6 +64,28 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
+        <Style x:Key="ExitButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF0000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF0000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -73,7 +95,11 @@
                     <BlurEffect Radius="100"/>
                 </Ellipse.Effect>
             </Ellipse>
-            <Ellipse Fill="#0D007ACC" Width="300" Height="300" Canvas.Right="-50" Canvas.Bottom="-50"/>
+            <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Left="463" Canvas.Top="205" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Ellipse.Effect>
+                    <BlurEffect Radius="100"/>
+                </Ellipse.Effect>
+            </Ellipse>
         </Canvas>
 
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-20,0,0">
@@ -117,5 +143,6 @@
                 </StackPanel>
             </Border>
         </StackPanel>
+        <Button x:Name="ExitButton" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="ExitButton_Click" Margin="720,0,0,0" ClickMode="Press" Style="{StaticResource ExitButtonStyle}" />
     </Grid>
 </Window>

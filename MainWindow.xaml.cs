@@ -58,7 +58,7 @@ namespace OpenSteam
         private async void Plugins_Click(object sender, RoutedEventArgs e)
         {
             Plugins plugins = new Plugins();
-            plugins.ManagePluginsInstall();
+            await plugins.ManagePluginsInstall();
             Thread.Sleep(1000);
             await plugins.KernelLuaInstallerAsync(GetSteamPath());
         }
@@ -95,6 +95,17 @@ namespace OpenSteam
         {
             OnlineLua onlineLua = new OnlineLua();
             onlineLua.Show();
+        }
+
+        private void Drag_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
