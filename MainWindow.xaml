@@ -23,7 +23,11 @@
                                 Background="{TemplateBinding Background}" 
                                 CornerRadius="10" 
                                 BorderThickness="1" 
-                                BorderBrush="#33FFFFFF">
+                                BorderBrush="#33FFFFFF"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -34,7 +38,7 @@
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="border" Property="RenderTransform">
                                     <Setter.Value>
-                                        <ScaleTransform ScaleX="0.97" ScaleY="0.97"/>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96"/>
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
@@ -64,14 +68,17 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="ExitButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -79,7 +86,12 @@
                                 <Setter TargetName="border" Property="Background" Value="#FF0000"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#FF0000"/>
+                                <Setter TargetName="border" Property="Background" Value="#AA0000"/>
+                                <Setter TargetName="border" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.85" ScaleY="0.85"/>
+                                    </Setter.Value>
+                                </Setter>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -103,7 +115,6 @@
         </Canvas>
 
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-20,0,0">
-
             <Image Source="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" Width="55" Height="55" Margin="0,0,0,10">
                 <Image.Effect>
                     <DropShadowEffect BlurRadius="15" Color="#007ACC" ShadowDepth="0" Opacity="0.5"/>
@@ -143,6 +154,18 @@
                 </StackPanel>
             </Border>
         </StackPanel>
-        <Button x:Name="ExitButton" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" Click="ExitButton_Click" Margin="720,0,0,0" ClickMode="Press" Style="{StaticResource ExitButtonStyle}" />
+
+        <Button x:Name="ExitButton" 
+                Content="X" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Top" 
+                Width="30" 
+                Height="30"
+                Foreground="White" 
+                Click="ExitButton_Click" 
+                Margin="720,0,0,0" 
+                ClickMode="Press" 
+                Style="{StaticResource ExitButtonStyle}" 
+                FontSize="14" />
     </Grid>
 </Window>
