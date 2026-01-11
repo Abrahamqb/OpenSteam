@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-//using static System.Net.WebRequestMethods;
 
 namespace OpenSteam.Service
 {
@@ -41,14 +40,14 @@ namespace OpenSteam.Service
                         {
                             p.WaitForExit();
                         });
-                        NotificationWindow win = new NotificationWindow("¡Millennium instalado!", 2);
+                        NotificationWindow win = new NotificationWindow("¡Millennium installed!", 2);
                         win.Show();
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error crítico: " + ex.Message);
+                MessageBox.Show("Critical error: " + ex.Message);
             }
         }
 
@@ -56,7 +55,7 @@ namespace OpenSteam.Service
         {
             if (string.IsNullOrEmpty(steamPath) || !Directory.Exists(steamPath))
             {
-                MessageBox.Show("No se encontró la ruta de Steam.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Steam path not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -84,7 +83,7 @@ namespace OpenSteam.Service
                     }
                     catch(Exception)
                     {
-                        MessageBox.Show("El archivo ZIP de KernelLua está corrupto. O Es posible que ya exista (Continua para volver a intentar)", "Error de extracción", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("The KernelLua ZIP file is corrupt. Or it may already exist (Continue to try again)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         Thread.Sleep(800);
                         File.Delete(Path.Combine(pluginsFolder, "KernelLua"));
                         return;
@@ -93,14 +92,14 @@ namespace OpenSteam.Service
                 });
 
 
-                NotificationWindow win = new NotificationWindow("¡KernelLua instalado con éxito!", 2);
+                NotificationWindow win = new NotificationWindow("¡KernelLua successfully installed!", 2);
                 win.Show();
 
                 if (File.Exists(tempZip)) File.Delete(tempZip);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error crítico: {ex.Message}", "Fallo de instalación", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Critical error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

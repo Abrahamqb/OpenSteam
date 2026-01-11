@@ -31,12 +31,12 @@ namespace OpenSteam
         {
             if (File.Exists(Path.Combine(GetSteamPath(), "xinput1_4.dll")) && File.Exists(Path.Combine(GetSteamPath(), "hid.dll")))
             {
-                ParcheEstado.Text = "Parche instalado";
+                ParcheEstado.Text = "Status: System Ready";
                 StatusDot.Fill = Brushes.LimeGreen;
             }
             else
             {
-                ParcheEstado.Text = "Parche no instalado (necesario Parchear)";
+                ParcheEstado.Text = "Status: System Not Ready (You need patch)";
                 StatusDot.Fill = Brushes.Red;
             }
         }

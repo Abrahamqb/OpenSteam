@@ -19,7 +19,7 @@ namespace OpenSteam.Service
         {
             if (string.IsNullOrEmpty(path))
             {
-                MessageBox.Show("No se ha detectado la ruta de Steam.");
+                MessageBox.Show("The Steam path was not detected.");
                 return;
             }
             string luaPathSteam = Path.Combine(path, "config", "stplug-in");
@@ -40,16 +40,16 @@ namespace OpenSteam.Service
 
                     string destinationFile = Path.Combine(luaPathSteam, luaLoader.SafeFileName);
                     File.Copy(luaLoader.FileName, destinationFile, true);
-                    NotificationWindow win = new NotificationWindow("¡Lua cargado con éxito!", 2);
+                    NotificationWindow win = new NotificationWindow("¡Lua successfully loaded!", 2);
                     win.Show();
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("Error: No tienes permisos para escribir en la carpeta de Steam. Ejecuta como administrador.");
+                    MessageBox.Show("Error: You do not have permission to write to the Steam folder. Run as administrator.");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Algo salió mal: {ex.Message}");
+                    MessageBox.Show($"Something went wrong: {ex.Message}");
                 }
             }
         }
@@ -98,12 +98,12 @@ namespace OpenSteam.Service
                         Directory.Delete(extractPath, true);
                     });
 
-                    NotificationWindow win = new NotificationWindow($"¡Script {ID}.lua instalado!", 2);
+                    NotificationWindow win = new NotificationWindow($"¡Script {ID}.lua successfully loaded!", 2);
                     win.Show();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error en la instalación: {ex.Message}", "Fallo de red/archivo");
+                    MessageBox.Show($"Something went wrong:: {ex.Message}", "Error");
                 }
                 finally
                 {

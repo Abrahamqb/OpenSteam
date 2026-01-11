@@ -36,7 +36,7 @@ namespace OpenSteam.Service
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error al reiniciar Steam: {ex.Message}");
+                System.Windows.MessageBox.Show($"Something went wrong: {ex.Message}");
             }
         }
     }
