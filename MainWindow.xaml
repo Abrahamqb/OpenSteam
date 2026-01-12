@@ -139,15 +139,15 @@
                         </TextBlock.Effect>
                     </TextBlock>
 
-                    <TextBlock Text="v2.1 Beta | .NET 9 Edition | Jbrequi (Abrahamqb)" Foreground="#66FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,25"/>
+                    <TextBlock x:Name="txtVersion" Text="v2.1 Beta | .NET 9 Edition | Jbrequi (Abrahamqb)" Foreground="#66FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,25"/>
 
                     <UniformGrid Columns="3">
                         <Button x:Name="patchButton" Content="Patch" Style="{StaticResource PrimaryAction}" Width="145" Height="45" Click="patchButton_Click"/>
                         <Button x:Name="DeletePatchButton" Content="Delete Patch" Style="{StaticResource DangerAction}" Width="145" Height="45" Click="DeletePatchButton_Click"/>
                         <Button x:Name="ResetSteam" Content="Restart Steam" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ResetSteam_Click"/>
                         <Button x:Name="Plugins" Content="Kernel + Millennium" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Plugins_Click"/>
-                        <Button x:Name="ManualLua" Content="LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ManualLua_Click"/>
-                        <Button Content="Information" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Button_Click"/>
+                        <Button x:Name="ManualLuaButton" Content="LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ManualLua_Click"/>
+                        <Button x:Name="informationButton" Content="Information" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Button_Click"/>
                     </UniformGrid>
 
                     <Button x:Name="OnlineLua" Content="⚡ OnlineLua Store" Style="{StaticResource PrimaryAction}" Width="459" Height="50" Margin="0,10,0,0" Click="OnlineLua_Click">

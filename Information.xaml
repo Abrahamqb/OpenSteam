@@ -86,7 +86,7 @@
                         </TextBlock.Effect>
                     </TextBlock>
 
-                    <TextBlock Text="Version 2.1 Beta" Foreground="#66FFFFFF" FontSize="11" Margin="0,0,0,20"/>
+                    <TextBlock x:Name="InfoVersion" Text="Version 2.1 Beta" Foreground="#66FFFFFF" FontSize="11" Margin="0,0,0,20"/>
 
                     <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="280" Margin="0,0,0,15">
                         <StackPanel>

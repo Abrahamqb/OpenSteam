@@ -7,7 +7,7 @@ using System.IO;
 
 namespace OpenSteam.Service
 {
-    public class attach
+    public class Attach
     {
         public void PatchSteam(string path, bool Delet)
         {

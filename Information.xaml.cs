@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenSteam.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,9 @@ namespace OpenSteam
         public Information()
         {
             InitializeComponent();
+            Update update = new Update();
+            var version = update.GetVersion();
+            InfoVersion.Text = $"v{version} Beta | .NET 9 Edition | Jbrequi (Abrahamqb)";
         }
 
         private void Cerrar_Click(object sender, RoutedEventArgs e)

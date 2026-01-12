@@ -24,10 +24,14 @@ namespace OpenSteam
         public MainWindow()
         {
             InitializeComponent();
-            Estado();
+            State();
+            Update update = new Update();
+            var version = update.GetVersion();
+            txtVersion.Text = $"v{version} Beta | .NET 9 Edition | Jbrequi (Abrahamqb)";
+            update.CheckForUpdates();
         }
 
-        public void Estado()
+        public void State()
         {
             if (File.Exists(Path.Combine(GetSteamPath(), "xinput1_4.dll")) && File.Exists(Path.Combine(GetSteamPath(), "hid.dll")))
             {
@@ -43,16 +47,16 @@ namespace OpenSteam
 
         private void patchButton_Click(object sender, RoutedEventArgs e)
         {
-            attach attach = new attach();
+            Attach attach = new Attach();
             attach.PatchSteam(GetSteamPath(), false);
-            Estado();
+            State();
         }
 
         private void DeletePatchButton_Click(object sender, RoutedEventArgs e)
         {
-            attach attach = new attach();
+            Attach attach = new Attach();
             attach.PatchSteam(GetSteamPath(), true);
-            Estado();
+            State();
         }
 
         private async void Plugins_Click(object sender, RoutedEventArgs e)
@@ -88,13 +92,13 @@ namespace OpenSteam
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Information Info = new Information();
-            Info.Show();
+            Info.ShowDialog();
         }
 
         private void OnlineLua_Click(object sender, RoutedEventArgs e)
         {
             OnlineLua onlineLua = new OnlineLua();
-            onlineLua.Show();
+            onlineLua.ShowDialog();
         }
 
         private void Drag_MouseDown(object sender, MouseButtonEventArgs e)

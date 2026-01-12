@@ -103,7 +103,7 @@ namespace OpenSteam.Service
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Something went wrong:: {ex.Message}", "Error");
+                    MessageBox.Show($"Something went wrong: {ex.Message}", "Error");
                 }
                 finally
                 {

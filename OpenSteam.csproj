@@ -22,6 +22,7 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
     <ApplicationIcon>steam.ico</ApplicationIcon>
+    <Version>0.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
