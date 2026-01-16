@@ -1,34 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net;
-using System.Diagnostics;
 using System.Windows;
 
 namespace OpenSteam.Service
 {
-    internal class Update
+    public static class Update
     {
-        public string GetVersion()
+        public static string GetVersion()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             return $"{version.Major}.{version.Minor}.{version.Build}";
         }
 
-        public void CheckForUpdates()
+        public static async Task CheckForUpdates()
         {
             try
             {
-                using (WebClient client = new WebClient())
+                using (HttpClient client = new HttpClient())
                 {
-                    string latestVersionString = client.DownloadString("https://raw.githubusercontent.com/Abrahamqb/OpenSteam/refs/heads/master/version.txt").Trim();
+                    client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+
+                    string latestVersionString = await client.GetStringAsync("https://raw.githubusercontent.com/Abrahamqb/OpenSteam/refs/heads/master/version.txt");
+                    latestVersionString = latestVersionString.Trim();
+
                     Version latestVersion = new Version(latestVersionString);
                     Version currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
                     if (latestVersion > currentVersion)
                     {
-                        MessageBox.Show($"A new version is available: v{latestVersion}. You are currently using v{currentVersion}. Please visit the official website to download the latest version.", "Update Available", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"A new version is available: v{latestVersion}\n\nYou are using: v{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build}",
+                            "Update Available", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }

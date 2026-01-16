@@ -32,18 +32,9 @@ namespace OpenSteam
             ButtonSearch.IsEnabled = false;
             ButtonSearch.Opacity = 0.2;
             LuaLoaders luaLoaders = new LuaLoaders();
-            var response = luaLoaders.OnlineLoad(SearchBox.Text, GetSteamPath());
+            var response = luaLoaders.OnlineLoad(SearchBox.Text, SteamUtils.GetSteamPath());
             ButtonSearch.IsEnabled = true;
             ButtonSearch.Opacity = 1.0;
-        }
-        public string GetSteamPath()
-        {
-            string registryPath = Microsoft.Win32.Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", null) as string;
-            if (registryPath != null)
-                return registryPath.Replace("/", "\\");
-            string defaultPath = @"C:\Program Files (x86)\Steam";
-            if (Directory.Exists(defaultPath)) return defaultPath;
-            return null;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

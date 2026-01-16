@@ -8,7 +8,6 @@
         WindowStartupLocation="CenterScreen" Background="Transparent" 
         ResizeMode="NoResize" WindowStyle="None" MouseDown="Drag_MouseDown"
         AllowsTransparency="True"
-        
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
         UseLayoutRounding="True">
@@ -20,7 +19,6 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="6"/>
-            <Setter Property="RenderOptions.EdgeMode" Value="Aliased"/> 
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -96,17 +94,8 @@
         </Grid.Effect>
 
         <Border x:Name="MainBorder" Background="#0F0F0F" CornerRadius="20" BorderThickness="1" BorderBrush="#33FFFFFF" ClipToBounds="True">
-            <Border.OpacityMask>
-                <VisualBrush>
-                    <VisualBrush.Visual>
-                        <Border Background="Black" CornerRadius="20" 
-                                Width="{Binding ElementName=MainBorder, Path=ActualWidth}" 
-                                Height="{Binding ElementName=MainBorder, Path=ActualHeight}"/>
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </Border.OpacityMask>
-
             <Grid>
+
                 <Grid ClipToBounds="True">
                     <Canvas IsHitTestVisible="False">
                         <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Left="-150" Canvas.Top="-150">
@@ -125,13 +114,9 @@
                 <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" />
 
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,1,0,0" Height="370.4">
-                    <Image Source="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" 
-                           Width="55" Height="55" Margin="0,0,0,10" SnapsToDevicePixels="True">
-                        <Image.Effect>
-                            <DropShadowEffect BlurRadius="15" Color="#007ACC" ShadowDepth="0" Opacity="0.5"/>
-                        </Image.Effect>
-                    </Image>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,1,0,0">
+
+                    <Image Height="45" Width="49"/>
 
                     <TextBlock Text="OPENSTEAM MANAGER" Foreground="White" FontSize="22" FontWeight="ExtraBold" HorizontalAlignment="Center">
                         <TextBlock.Effect>
@@ -139,25 +124,41 @@
                         </TextBlock.Effect>
                     </TextBlock>
 
-                    <TextBlock x:Name="txtVersion" Text="v2.1 Beta | .NET 9 Edition | Jbrequi (Abrahamqb)" Foreground="#66FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,25"/>
+                    <TextBlock x:Name="txtVersion" Text="v2.1 Beta | .NET 9 Edition | Abrahamqb" Foreground="#66FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,25"/>
 
-                    <UniformGrid Columns="3">
-                        <Button x:Name="patchButton" Content="Patch" Style="{StaticResource PrimaryAction}" Width="145" Height="45" Click="patchButton_Click"/>
-                        <Button x:Name="DeletePatchButton" Content="Delete Patch" Style="{StaticResource DangerAction}" Width="145" Height="45" Click="DeletePatchButton_Click"/>
-                        <Button x:Name="ResetSteam" Content="Restart Steam" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ResetSteam_Click"/>
-                        <Button x:Name="Plugins" Content="Kernel + Millennium" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Plugins_Click"/>
-                        <Button x:Name="ManualLuaButton" Content="LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="ManualLua_Click"/>
-                        <Button x:Name="informationButton" Content="Information" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Width="145" Height="45" Click="Button_Click"/>
+                    <UniformGrid Columns="3" Width="470">
+                        <Button x:Name="patchButton" Content="Patch" Style="{StaticResource PrimaryAction}" Height="45" Click="patchButton_Click"/>
+                        <Button x:Name="DeletePatchButton" Content="Delete Patch" Style="{StaticResource DangerAction}" Height="45" Click="DeletePatchButton_Click"/>
+                        <Button x:Name="ResetSteam" Content="Restart Steam" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="ResetSteam_Click"/>
+                        <Button x:Name="Plugins" Content="Millennium + Plugin" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="Plugins_Click"/>
+                        <Button x:Name="ManualLuaButton" Content="LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="ManualLua_Click"/>
+                        <Button x:Name="informationButton" Content="Information" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="Button_Click"/>
                     </UniformGrid>
 
-                    <Button x:Name="OnlineLua" Content="⚡ OnlineLua Store" Style="{StaticResource PrimaryAction}" Width="459" Height="50" Margin="0,10,0,0" Click="OnlineLua_Click">
-                        <Button.Background>
-                            <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
-                                <GradientStop Color="#007ACC" Offset="0"/>
-                                <GradientStop Color="#6A2B9A" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
+                    <Grid Width="470" Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="OnlineLua" Grid.Column="0" Content="⚡ OnlineLua Store" Style="{StaticResource PrimaryAction}" Height="50" Margin="6" Click="OnlineLua_Click">
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
+                                    <GradientStop Color="#007ACC" Offset="0"/>
+                                    <GradientStop Color="#6A2B9A" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+
+                        <Button x:Name="LuaManagerButton" Grid.Column="1" Content="📝 Manager" Style="{StaticResource DangerAction}" Height="50" Margin="6" Click="LuaManager_Click">
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
+                                    <GradientStop Color="#FF4493FF" Offset="0"/>
+                                    <GradientStop Color="#FF7D0BC1" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+                    </Grid>
 
                     <Border Background="#0FFFFFFF" CornerRadius="8" Margin="0,30,0,0" Padding="15,8" HorizontalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
@@ -165,6 +166,7 @@
                             <TextBlock x:Name="ParcheEstado" Text="Status: System Ready" Foreground="#88FFFFFF" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
+
                 </StackPanel>
             </Grid>
         </Border>

@@ -20,20 +20,19 @@ namespace OpenSteam
 {
     public partial class MainWindow : Window
     {
-        
+
         public MainWindow()
         {
             InitializeComponent();
             State();
-            Update update = new Update();
-            var version = update.GetVersion();
+            var version = Update.GetVersion();
             txtVersion.Text = $"v{version} Beta | .NET 9 Edition | Jbrequi (Abrahamqb)";
-            update.CheckForUpdates();
+            _ = Update.CheckForUpdates();
         }
 
         public void State()
         {
-            if (File.Exists(Path.Combine(GetSteamPath(), "xinput1_4.dll")) && File.Exists(Path.Combine(GetSteamPath(), "hid.dll")))
+            if (File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "xinput1_4.dll")) && File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")))
             {
                 ParcheEstado.Text = "Status: System Ready";
                 StatusDot.Fill = Brushes.LimeGreen;
@@ -48,14 +47,14 @@ namespace OpenSteam
         private void patchButton_Click(object sender, RoutedEventArgs e)
         {
             Attach attach = new Attach();
-            attach.PatchSteam(GetSteamPath(), false);
+            attach.PatchSteam(SteamUtils.GetSteamPath(), false);
             State();
         }
 
         private void DeletePatchButton_Click(object sender, RoutedEventArgs e)
         {
             Attach attach = new Attach();
-            attach.PatchSteam(GetSteamPath(), true);
+            attach.PatchSteam(SteamUtils.GetSteamPath(), true);
             State();
         }
 
@@ -64,29 +63,18 @@ namespace OpenSteam
             Plugins plugins = new Plugins();
             await plugins.ManagePluginsInstall();
             Thread.Sleep(1000);
-            await plugins.KernelLuaInstallerAsync(GetSteamPath());
+            await plugins.KernelLuaInstallerAsync(SteamUtils.GetSteamPath());
         }
 
         private void ManualLua_Click(object sender, RoutedEventArgs e)
         {
             LuaLoaders luaLoaders = new LuaLoaders();
-            luaLoaders.Load(GetSteamPath());
-        }
-
-        public string GetSteamPath()
-        {
-            string registryPath = Microsoft.Win32.Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", null) as string;
-            if (registryPath != null)
-                return registryPath.Replace("/", "\\");
-            string defaultPath = @"C:\Program Files (x86)\Steam";
-            if (Directory.Exists(defaultPath)) return defaultPath;
-            return null;
+            luaLoaders.Load(SteamUtils.GetSteamPath());
         }
 
         private void ResetSteam_Click(object sender, RoutedEventArgs e)
         {
-            SteamUtils steamUtils = new SteamUtils();
-            steamUtils.Reset();
+            SteamUtils.Reset();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -110,6 +98,12 @@ namespace OpenSteam
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void LuaManager_Click(object sender, RoutedEventArgs e)
+        {
+            LibrarySteam librarySteam = new LibrarySteam();
+            librarySteam.ShowDialog();
         }
     }
 }

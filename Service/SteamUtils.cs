@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace OpenSteam.Service
 {
-    public class SteamUtils
+    public static class SteamUtils
     {
-        public void Reset() 
+        public static void Reset() 
         {
             try
             {
@@ -38,6 +39,15 @@ namespace OpenSteam.Service
             {
                 System.Windows.MessageBox.Show($"Something went wrong: {ex.Message}");
             }
+        }
+        public static string GetSteamPath()
+        {
+            string registryPath = Microsoft.Win32.Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", null) as string;
+            if (registryPath != null)
+                return registryPath.Replace("/", "\\");
+            string defaultPath = @"C:\Program Files (x86)\Steam";
+            if (Directory.Exists(defaultPath)) return defaultPath;
+            return null;
         }
     }
 }

@@ -23,8 +23,7 @@ namespace OpenSteam
         public Information()
         {
             InitializeComponent();
-            Update update = new Update();
-            var version = update.GetVersion();
+            var version = Update.GetVersion();
             InfoVersion.Text = $"v{version} Beta | .NET 9 Edition | Jbrequi (Abrahamqb)";
         }
 
