@@ -8,7 +8,7 @@ It also features a **manual section**, so you can easily install scripts that ar
 
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-0.2.3-blue)
 
 ---
 
@@ -64,7 +64,7 @@ Use it responsibly and at your own risk.
 ## 📄 License
 
 This project is licensed under the **MIT License**.  
-See the [LICENSE](LICENSE) file for more details.
+See the [LICENSE](LICENSE) file for more details. (There is none for now)
 
 ---
 
