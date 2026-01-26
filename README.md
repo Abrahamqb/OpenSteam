@@ -8,7 +8,7 @@ It also features a **manual section**, so you can easily install scripts that ar
 
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-0.2.3-blue)
+![Version](https://img.shields.io/badge/version-0.2.4-blue)
 
 ---
 
@@ -45,6 +45,17 @@ It also features a **manual section**, so you can easily install scripts that ar
 Download and install the **latest release** from GitHub:
 
 👉 https://github.com/Abrahamqb/OpenSteam/releases
+
+## 🔥 How to use
+
+First, you need to patch Steam and restart it. 
+Now you have three methods to add games.
+- Manual Lua (LuaLoader): You need to download the Lua file (not the game) from an external website, for example: Openlua.cloud or fares.top
+- OpenSteam official (LuaStore is free): Enter the ID (use steamdb to find it) of the game you want to add and click the button; it will be added to your account instantly.
+- Millennium + KernelLua (Not official but recommended): Here you need to install Millennium (OpenSteam automates this) and activate the plugin to enable the option to add games natively from Steam itself.
+For Millennim and KernelLua, here is the tutorial by the creator of this plugin: https://www.youtube.com/watch?v=zE3iYCI5QNk
+
+⚠️**Important: After patching, adding, or removing a game, you must restart Steam for the changes to take effect and the game to be added. You can restart manually or using the designated button.**
 
 ### Compatibility
 
