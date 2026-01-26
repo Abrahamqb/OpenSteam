@@ -88,13 +88,21 @@
 
                     <TextBlock x:Name="InfoVersion" Text="Version 2.1 Beta" Foreground="#66FFFFFF" FontSize="11" Margin="0,0,0,20"/>
 
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="280" Margin="0,0,0,15">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="280" Margin="0,0,0,15" Cursor="ScrollNS">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="13" LineHeight="20" Margin="0,0,0,20">
                                 OpenSteam is an open-source tool designed to enhance user freedom within the Steam ecosystem. It acts as a compatibility and patching layer that allows the injection of advanced features.
                             </TextBlock>
+                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" 
+                                BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
+                                <StackPanel>
+                                    <TextBlock Text="Dev" Foreground="#007ACC" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                                    <TextBlock 
+                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12" Text="Open source project created by Jbrequi (Abrahamqb) . Github: https://github.com/Abrahamqb/OpenSteam/"/>
+                                </StackPanel>
+                            </Border>
 
-                            <TextBlock Text="🛠️ Core Features" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,0,0,12"/>
+                            <TextBlock Text="🛠️ Core Features" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,12,0,12"/>
                             <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,0,0,10" 
                                     BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
                                 <StackPanel>
@@ -110,14 +118,6 @@
                                     <TextBlock Text="LuaLoader" Foreground="#007ACC" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
                                     <TextBlock Text="Loads Lua files from external servers to access non-DRM titles. Note: Online play requires an Online Fix patch." 
                                                TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
-                                </StackPanel>
-                            </Border>
-                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" 
-                                BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
-                                <StackPanel>
-                                    <TextBlock Text="Dev" Foreground="#007ACC" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                                    <TextBlock 
-                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12" Text="Open source project created by Jbrequi (Abrahamqb) . Github: https://github.com/Abrahamqb/OpenSteam/"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

@@ -4,39 +4,40 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace OpenSteam
 {
-    /// <summary>
-    /// Lógica de interacción para LibrarySteam.xaml
-    /// </summary>
     public partial class LibrarySteam : Window
     {
-
         private string luaPath;
+        private string steamPath;
+        private static readonly HttpClient client = new HttpClient();
 
         public LibrarySteam()
         {
             InitializeComponent();
-            string steam = SteamUtils.GetSteamPath();
 
-            if (steam != null)
+            if (!client.DefaultRequestHeaders.Contains("User-Agent"))
             {
-                luaPath = Path.Combine(steam, "config", "stplug-in");
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+            }
+
+            steamPath = SteamUtils.GetSteamPath();
+
+            if (steamPath != null)
+            {
+                luaPath = Path.Combine(steamPath, "config", "stplug-in");
                 if (!Directory.Exists(luaPath))
                 {
                     Directory.CreateDirectory(luaPath);
                 }
-                RefreshLuaList();
+                _ = RefreshLuaList();
             }
             else
             {
@@ -44,16 +45,70 @@ namespace OpenSteam
             }
         }
 
-        private void RefreshLuaList()
+        private async Task<string> GetGameName(string appId)
+        {
+            try
+            {
+                string acfPath = Path.Combine(steamPath, "steamapps", $"appmanifest_{appId}.acf");
+                if (File.Exists(acfPath))
+                {
+                    string content = File.ReadAllText(acfPath);
+                    var match = Regex.Match(content, "\"name\"\\s+\"([^\"]+)\"");
+                    if (match.Success) return match.Groups[1].Value + " (Not deleting can be native!)";
+                }
+            }
+            catch { }
+
+            try
+            {
+                string url = $"https://store.steampowered.com/app/{appId}/?l=spanish";
+                string html = await client.GetStringAsync(url);
+
+                var titleMatch = Regex.Match(html, "<title>(.*?) en Steam</title>", RegexOptions.IgnoreCase);
+
+                if (titleMatch.Success)
+                {
+                    string cleanName = titleMatch.Groups[1].Value;
+                    if (cleanName.Contains(" en "))
+                    {
+                        cleanName = cleanName.Split(new[] { " en " }, StringSplitOptions.None).Last();
+                    }
+
+                    return cleanName.Trim()+" (OpenSteam)";
+                }
+            }
+            catch 
+            {
+                return $"Connection error: {appId}.lua";
+            }
+
+            return appId;
+        }
+
+        private async Task RefreshLuaList()
         {
             LuaListBox.Items.Clear();
-            if (Directory.Exists(luaPath))
+            if (!Directory.Exists(luaPath)) return;
+
+            string[] files = Directory.GetFiles(luaPath, "*.lua");
+
+            foreach (string file in files)
             {
-                string[] files = Directory.GetFiles(luaPath, "*.lua");
-                foreach (string file in files)
+                string id = Path.GetFileNameWithoutExtension(file);
+
+                ListBoxItem item = new ListBoxItem
                 {
-                    LuaListBox.Items.Add(Path.GetFileName(file));
-                }
+                    Content = $"loading data ({id})...",
+                    Tag = Path.GetFileName(file)
+                };
+                LuaListBox.Items.Add(item);
+
+                _ = Task.Run(async () => {
+                    string realName = await GetGameName(id);
+                    Dispatcher.Invoke(() => {
+                        item.Content = $"{realName}";
+                    });
+                });
             }
         }
 
@@ -61,27 +116,26 @@ namespace OpenSteam
         {
             if (LuaListBox.SelectedItems.Count == 0) return;
 
-            var result = MessageBox.Show("Delete selected files?", "Confirm", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            if (MessageBox.Show("Delete selected files?", "Delete", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                foreach (var item in LuaListBox.SelectedItems)
+                foreach (ListBoxItem item in LuaListBox.SelectedItems)
                 {
-                    string path = Path.Combine(luaPath, item.ToString());
+                    string fileName = item.Tag.ToString();
+                    string path = Path.Combine(luaPath, fileName);
                     if (File.Exists(path)) File.Delete(path);
                 }
-                RefreshLuaList();
+                _ = RefreshLuaList();
             }
         }
 
         private void BtnOpenSteam_Click(object sender, RoutedEventArgs e)
         {
             if (LuaListBox.SelectedItems.Count == 0) return;
-            foreach (var item in LuaListBox.SelectedItems)
+            foreach (ListBoxItem item in LuaListBox.SelectedItems)
             {
-                var appid = item.ToString().Replace(".lua", "");
-                Process.Start(new ProcessStartInfo("https://steamdb.info/app/"+appid) { UseShellExecute = true });
+                var appid = item.Tag.ToString().Replace(".lua", "");
+                Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{appid}") { UseShellExecute = true });
             }
-             RefreshLuaList();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e) => this.Close();

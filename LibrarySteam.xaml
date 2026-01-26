@@ -16,7 +16,7 @@
             <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.7" Color="Black"/>
         </Grid.Effect>
 
-        <Border x:Name="MainBorder" CornerRadius="20" Background="#0F0F0F" BorderThickness="1" BorderBrush="#33FFFFFF" ClipToBounds="True">
+        <Border x:Name="MainBorder" CornerRadius="20" Background="#0F0F0F" BorderThickness="1" BorderBrush="#33FFFFFF">
             <Border.OpacityMask>
                 <VisualBrush>
                     <VisualBrush.Visual>
@@ -27,14 +27,14 @@
                 </VisualBrush>
             </Border.OpacityMask>
 
-            <Grid>
+            <Grid ClipToBounds="True">
                 <Canvas IsHitTestVisible="False">
                     <Ellipse Fill="#1A007ACC" Width="300" Height="300" Canvas.Left="-100" Canvas.Top="-100">
                         <Ellipse.Effect>
                             <BlurEffect Radius="80"/>
                         </Ellipse.Effect>
                     </Ellipse>
-                    <Ellipse Fill="#1A6A2B9A" Width="300" Height="300" Canvas.Right="-100" Canvas.Bottom="-100">
+                    <Ellipse Fill="#1A007ACC" Width="300" Height="300" Canvas.Right="-100" Canvas.Bottom="-100">
                         <Ellipse.Effect>
                             <BlurEffect Radius="80"/>
                         </Ellipse.Effect>
@@ -55,7 +55,7 @@
                                  BorderThickness="0" 
                                  Foreground="White" 
                                  SelectionMode="Extended" 
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" FontFamily="Arial Rounded MT Bold">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
                                     <Setter Property="Padding" Value="10"/>
@@ -135,7 +135,8 @@
                             <Button.Foreground>White</Button.Foreground>
                         </Button>
                     </UniformGrid>
-                    <Button Content="Back to Dashboard" Click="Back_Click" Background="Transparent" BorderThickness="0" Foreground="#44FFFFFF" Cursor="Hand" Width="110"/>
+
+                    <Button Content="Back to Dashboard" Click="Back_Click" Background="Transparent" BorderThickness="0" Foreground="#44FFFFFF" Cursor="Hand" Width="110" Margin="0,5,0,0"/>
                 </StackPanel>
             </Grid>
         </Border>

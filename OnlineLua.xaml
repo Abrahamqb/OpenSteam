@@ -136,7 +136,7 @@
                             Cursor="Hand" Click="Button_Click_1"/>
 
                     <TextBlock Text="Powered by Kernelos.org" Foreground="#33FFFFFF" 
-                               FontSize="9" HorizontalAlignment="Center" Margin="0,20,0,0" MouseDown="PowerKernel_Click"/>
+                               FontSize="9" HorizontalAlignment="Center" Margin="0,20,0,0" MouseDown="PowerKernel_Click" Cursor="Hand"/>
                 </StackPanel>
             </Grid>
         </Border>

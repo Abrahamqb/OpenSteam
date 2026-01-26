@@ -93,29 +93,35 @@
             <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.6" Color="Black"/>
         </Grid.Effect>
 
-        <Border x:Name="MainBorder" Background="#0F0F0F" CornerRadius="20" BorderThickness="1" BorderBrush="#33FFFFFF" ClipToBounds="True">
-            <Grid>
+        <Border x:Name="MainBorder" Background="#0F0F0F" CornerRadius="20" BorderThickness="1" BorderBrush="#33FFFFFF">
+            <Border.OpacityMask>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Border Background="Black" CornerRadius="20" 
+                                Width="{Binding ElementName=MainBorder, Path=ActualWidth}" 
+                                Height="{Binding ElementName=MainBorder, Path=ActualHeight}"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.OpacityMask>
 
-                <Grid ClipToBounds="True">
-                    <Canvas IsHitTestVisible="False">
-                        <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Left="-150" Canvas.Top="-150">
-                            <Ellipse.Effect>
-                                <BlurEffect Radius="100"/>
-                            </Ellipse.Effect>
-                        </Ellipse>
-                        <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Right="-150" Canvas.Bottom="-150">
-                            <Ellipse.Effect>
-                                <BlurEffect Radius="100"/>
-                            </Ellipse.Effect>
-                        </Ellipse>
-                    </Canvas>
-                </Grid>
+            <Grid ClipToBounds="True">
+                <Canvas IsHitTestVisible="False">
+                    <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Left="-150" Canvas.Top="-150">
+                        <Ellipse.Effect>
+                            <BlurEffect Radius="100"/>
+                        </Ellipse.Effect>
+                    </Ellipse>
+                    <Ellipse Fill="#1A007ACC" Width="400" Height="400" Canvas.Right="-150" Canvas.Bottom="-150">
+                        <Ellipse.Effect>
+                            <BlurEffect Radius="100"/>
+                        </Ellipse.Effect>
+                    </Ellipse>
+                </Canvas>
 
                 <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" />
 
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,1,0,0">
-
                     <Image Height="45" Width="49"/>
 
                     <TextBlock Text="OPENSTEAM MANAGER" Foreground="White" FontSize="22" FontWeight="ExtraBold" HorizontalAlignment="Center">
@@ -132,7 +138,7 @@
                         <Button x:Name="ResetSteam" Content="Restart Steam" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="ResetSteam_Click"/>
                         <Button x:Name="Plugins" Content="Millennium + Plugin" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="Plugins_Click"/>
                         <Button x:Name="ManualLuaButton" Content="LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="ManualLua_Click"/>
-                        <Button x:Name="informationButton" Content="Information" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="Button_Click"/>
+                        <Button x:Name="ExtraButton" Content="Extra" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="45" Click="Button_Click"/>
                     </UniformGrid>
 
                     <Grid Width="470" Margin="0,4,0,0">
@@ -166,7 +172,6 @@
                             <TextBlock x:Name="ParcheEstado" Text="Status: System Ready" Foreground="#88FFFFFF" FontSize="11" FontWeight="Medium" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Border>
-
                 </StackPanel>
             </Grid>
         </Border>
