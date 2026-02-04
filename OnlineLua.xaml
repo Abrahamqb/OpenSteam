@@ -10,7 +10,30 @@
         UseLayoutRounding="True"
         MouseDown="Window_MouseDown">
 
-    <Grid Margin="10">
+    <Window.Resources>
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#44FFFFFF"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+        <Grid Margin="10">
         <Grid.Resources>
             <Style x:Key="ModernButtonStyle" TargetType="Button">
                 <Setter Property="Foreground" Value="White"/>
@@ -114,7 +137,7 @@
 
                             <Button x:Name="ButtonSearch" Content="Cloud Search" 
                                     Height="50" Style="{StaticResource ModernButtonStyle}" 
-                                    Click="Button_Click">
+                                    Click="Search_Click">
                                 <Button.Background>
                                     <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
                                         <GradientStop Color="#007ACC" Offset="0"/>
@@ -131,9 +154,8 @@
                     </TextBlock>
 
                     <Button Content="Back to Menu" Margin="0,30,0,0" 
-                            HorizontalAlignment="Center" Background="Transparent" 
-                            Foreground="#55FFFFFF" BorderThickness="0" FontSize="12"
-                            Cursor="Hand" Click="Button_Click_1"/>
+                            HorizontalAlignment="Center" Style="{StaticResource GhostButton}" BorderThickness="0" FontSize="12"
+                            Cursor="Hand" Click="Back_Click"/>
 
                     <TextBlock Text="Powered by Kernelos.org" Foreground="#33FFFFFF" 
                                FontSize="9" HorizontalAlignment="Center" Margin="0,20,0,0" MouseDown="PowerKernel_Click" Cursor="Hand"/>

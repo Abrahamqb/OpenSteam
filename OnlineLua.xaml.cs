@@ -27,21 +27,6 @@ namespace OpenSteam
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonSearch.IsEnabled = false;
-            ButtonSearch.Opacity = 0.2;
-            LuaLoaders luaLoaders = new LuaLoaders();
-            var response = luaLoaders.OnlineLoad(SearchBox.Text, SteamUtils.GetSteamPath());
-            ButtonSearch.IsEnabled = true;
-            ButtonSearch.Opacity = 1.0;
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -67,6 +52,21 @@ namespace OpenSteam
 
                 }
             }
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonSearch.IsEnabled = false;
+            ButtonSearch.Opacity = 0.2;
+            LuaLoaders luaLoaders = new LuaLoaders();
+            var response = luaLoaders.OnlineLoad(SearchBox.Text, SteamUtils.GetSteamPath());
+            ButtonSearch.IsEnabled = true;
+            ButtonSearch.Opacity = 1.0;
         }
     }
 }

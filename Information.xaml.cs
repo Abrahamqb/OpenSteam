@@ -24,19 +24,20 @@ namespace OpenSteam
         {
             InitializeComponent();
             var version = Update.GetVersion();
-            InfoVersion.Text = $"v{version} Beta | .NET 9 Edition | Jbrequi (Abrahamqb)";
+            InfoVersion.Text = $"v{version} | .NET 9 Edition | Jbrequi (Abrahamqb)";
         }
 
-        private void Cerrar_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
                 this.DragMove();
             }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

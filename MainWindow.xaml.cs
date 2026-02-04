@@ -26,7 +26,7 @@ namespace OpenSteam
             InitializeComponent();
             State();
             var version = Update.GetVersion();
-            txtVersion.Text = $"v{version} Beta | .NET 9 Edition | Jbrequi (Abrahamqb)";
+            txtVersion.Text = $"v{version} | .NET 9 Edition | Jbrequi (Abrahamqb)";
             _ = Update.CheckForUpdates();
         }
 
@@ -77,12 +77,6 @@ namespace OpenSteam
             SteamUtils.Reset();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Information Info = new Information();
-            Info.ShowDialog();
-        }
-
         private void OnlineLua_Click(object sender, RoutedEventArgs e)
         {
             OnlineLua onlineLua = new OnlineLua();
@@ -104,6 +98,18 @@ namespace OpenSteam
         {
             LibrarySteam librarySteam = new LibrarySteam();
             librarySteam.ShowDialog();
+        }
+
+        private void Extra_Click(object sender, RoutedEventArgs e)
+        {
+            Extra Extra = new Extra();
+            Extra.ShowDialog();
+        }
+
+        private void Information_Click(object sender, RoutedEventArgs e)
+        {
+            Information info = new Information();
+            info.ShowDialog();
         }
     }
 }

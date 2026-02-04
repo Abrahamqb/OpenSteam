@@ -1,7 +1,8 @@
-﻿<Window x:Class="OpenSteam.Information"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="OpenSteam Information" Height="480" Width="450"
+        xmlns:av="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="av" x:Class="OpenSteam.Extra"
+        Title="OpenSteam Extras" Height="480" Width="450"
         WindowStartupLocation="CenterOwner" Background="Transparent" 
         WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize"
         MouseDown="Window_MouseDown"
@@ -11,7 +12,7 @@
         UseLayoutRounding="True">
 
     <Window.Resources>
-        <Style x:Key="ModernButtonStyle" TargetType="Button">
+        <Style x:Key="ModernButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -19,7 +20,7 @@
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
+                    <ControlTemplate TargetType="{x:Type Button}">
                         <Border x:Name="border" Background="{TemplateBinding Background}" 
                                 CornerRadius="8" BorderThickness="1" BorderBrush="#33FFFFFF"
                                 RenderTransformOrigin="0.5,0.5">
@@ -64,8 +65,8 @@
                     <VisualBrush.Visual>
                         <Border Background="Black" 
                                 CornerRadius="20" 
-                                Width="{Binding ElementName=MainBorder, Path=ActualWidth}" 
-                                Height="{Binding ElementName=MainBorder, Path=ActualHeight}"/>
+                                Width="{Binding ActualWidth, ElementName=MainBorder}" 
+                                Height="{Binding ActualHeight, ElementName=MainBorder}"/>
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Border.OpacityMask>
@@ -80,56 +81,64 @@
                 </Canvas>
 
                 <StackPanel Margin="25">
-                    <TextBlock Text="OpenSteam Framework" Foreground="White" FontSize="24" FontWeight="ExtraBold" Margin="0,0,0,5">
+                    <TextBlock Text="OpenSteam Extras" Foreground="White" FontSize="24" FontWeight="ExtraBold" Margin="0,0,0,5">
                         <TextBlock.Effect>
                             <DropShadowEffect BlurRadius="8" Color="#007ACC" ShadowDepth="0" Opacity="0.4"/>
                         </TextBlock.Effect>
                     </TextBlock>
 
-                    <TextBlock x:Name="InfoVersion" Text="Version 2.1 Beta" Foreground="#66FFFFFF" FontSize="11" Margin="0,0,0,20"/>
-
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="280" Margin="0,0,0,15" Cursor="ScrollNS">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="317" Margin="0,0.5,0,15" Cursor="ScrollNS">
                         <StackPanel>
-                            <TextBlock TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="13" LineHeight="20" Margin="0,0,0,20">
-                                OpenSteam is an open-source tool designed to enhance user freedom within the Steam ecosystem. It acts as a compatibility and patching layer that allows the injection of advanced features.
-                            </TextBlock>
-                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" 
+                            <TextBlock TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="13" LineHeight="20" Margin="0,0,0,20"><Run Text="OpenSteam Extras are tools, &quot;hacks,&quot; bypasses, etc., useful for your games or your Steam environment. The creator of OpenSteam disclaims responsibility for misuse, malware infections, bans, etc., as most of these tools were not developed by me. But they do the job."/></TextBlock>
+                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,10,0,0" 
+                                    BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
+                                <StackPanel>
+                                    <TextBlock Text="SteamCMD (Official)" Foreground="#FF1FFF00" FontWeight="Bold" FontSize="13" Margin="0,0,0,5" MouseDown="Steamcmd" Cursor="Hand"/>
+                                    <TextBlock Text="SteamCMD (Steam Console) is the lightweight, official, command-line-based version of the Steam client developed by the Valve Developer Community. Its primary use is to quickly download, install, and update dedicated game servers on Windows and Linux, without requiring a graphical interface." 
+                                               TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,10,0,0"
                                 BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
                                 <StackPanel>
-                                    <TextBlock Text="Dev" Foreground="#007ACC" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
+                                    <TextBlock Text="NLGL =&gt; RockstarLauncher Bypass" Foreground="#FFF3FF00" FontWeight="Bold" FontSize="13" Margin="0,0,0,5" MouseDown="nlgl" Cursor="Hand"/>
                                     <TextBlock 
-                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12" Text="Open source project created by Jbrequi (Abrahamqb) . Github: https://github.com/Abrahamqb/OpenSteam/"/>
+                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12" Text="NLGL (Nightlight Game Launcher) It is a tool whose function is to unlock the possibility of playing any Rockstar Games title that requires logging in or having the Rockstar Launcher installed."/>
                                 </StackPanel>
                             </Border>
-
-                            <TextBlock Text="🛠️ Core Features" Foreground="White" FontSize="16" FontWeight="Bold" Margin="0,12,0,12"/>
-                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,0,0,10" 
-                                    BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
+                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,10,0,0" 
+                                BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
                                 <StackPanel>
-                                    <TextBlock Text="Library Jailbreak" Foreground="#007ACC" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                                    <TextBlock Text="Unlocks the Steam library, allowing you to play games natively, including titles loaded via Lua." 
-                                               TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
+                                    <TextBlock Text="CreamInstaller => unlocks any DLC" Foreground="#FFF3FF00" FontWeight="Bold" FontSize="13" Margin="0,0,0,5" MouseDown="craminstaller" Cursor="Hand"/>
+                                    <TextBlock Text="Automatic DLC Unlocker Installer and Configuration Generator" 
+                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
                                 </StackPanel>
                             </Border>
-
-                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,0,0,10" 
-                                    BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
+                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,10,0,0" 
+                                BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
                                 <StackPanel>
-                                    <TextBlock Text="LuaLoader" Foreground="#007ACC" FontWeight="Bold" FontSize="13" Margin="0,0,0,5"/>
-                                    <TextBlock Text="Loads Lua files from external servers to access non-DRM titles. Note: Online play requires an Online Fix patch." 
-                                               TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
+                                    <TextBlock Text="Online-fix.me =&gt; Online Games Bypass " Foreground="#FFF3FF00" FontWeight="Bold" FontSize="13" Margin="0,0,0,5" MouseDown="onlinefix" Cursor="Hand"/>
+                                    <TextBlock Text="Online-Fix.me is a website that provides guides, patches, and files needed to play online multiplayer video games, including those that have been modified or cracked." 
+                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,10,0,0"
+                                BorderThickness="1" BorderBrush="#1AFFFFFF" SnapsToDevicePixels="True">
+                                <StackPanel>
+                                    <TextBlock Text="Steam Achievement Manager => Unlock any achievement" Foreground="Red" FontWeight="Bold" FontSize="13" Margin="0,0,0,5" MouseDown="steamachievementmanager" Cursor="Hand"/>
+                                    <TextBlock Text="Steam Achievement Manager (SAM) is a lightweight, portable application used to manage achievements and statistics in the popular PC gaming platform Steam. This application requires the Steam client, a Steam account and network access" 
+                                        TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-
-                    <Button Content="Close" HorizontalAlignment="Right" Width="120" Height="35" 
+                    <Button Content="Close" Width="120" Height="35" 
                             Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E"
                             Click="Close_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
-        <Rectangle x:Name="UpperLimit" HorizontalAlignment="Center" Height="2" Margin="0,95,0,0" Stroke="#66FFFFFF" VerticalAlignment="Top" Width="380" RenderTransformOrigin="0.5,0.5" Fill="#66FFFFFF">
+        <Rectangle x:Name="UpperLimit" HorizontalAlignment="Center" Height="2" Margin="0,60,0,0" Stroke="#66FFFFFF" VerticalAlignment="Top" Width="380" RenderTransformOrigin="0.5,0.5" Fill="#66FFFFFF">
             <Rectangle.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>

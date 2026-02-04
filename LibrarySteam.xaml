@@ -11,6 +11,29 @@
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True">
 
+    <Window.Resources>
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#44FFFFFF"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid Margin="15">
         <Grid.Effect>
             <DropShadowEffect BlurRadius="25" ShadowDepth="0" Opacity="0.7" Color="Black"/>
@@ -136,7 +159,7 @@
                         </Button>
                     </UniformGrid>
 
-                    <Button Content="Back to Dashboard" Click="Back_Click" Background="Transparent" BorderThickness="0" Foreground="#44FFFFFF" Cursor="Hand" Width="110" Margin="0,5,0,0"/>
+                    <Button Content="Back to Dashboard" Click="Back_Click" Style="{StaticResource GhostButton}" Cursor="Hand" Width="110" Margin="0,5,0,0"/>
                 </StackPanel>
             </Grid>
         </Border>
