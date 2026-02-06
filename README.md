@@ -6,9 +6,9 @@
 OpenSteam includes built-in Millennium installation and an integrated **Lua store**, allowing you to download and manage Lua scripts **without relying on external websites**.  
 It also features a **manual section**, so you can easily install scripts that are not available in the store.
 
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
+![Status](https://img.shields.io/badge/status-%20release-green)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-0.2.4-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 
 ---
 
