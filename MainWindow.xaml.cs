@@ -28,6 +28,7 @@ namespace OpenSteam
             var version = Update.GetVersion();
             txtVersion.Text = $"v{version} | .NET 9 Edition | Jbrequi (Abrahamqb)";
             _ = Update.CheckForUpdates();
+            _ = Update.GetNews();
         }
 
         public void State()

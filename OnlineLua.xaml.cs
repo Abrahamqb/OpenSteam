@@ -68,5 +68,33 @@ namespace OpenSteam
             ButtonSearch.IsEnabled = true;
             ButtonSearch.Opacity = 1.0;
         }
+
+        private void Fix65432(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult YN = MessageBox.Show("Next, you will be redirected to a Github page and a YouTube video (I am not the owner) that will explain how to use Steamless to fix it.\n I am not responsible for any harm or damage that Steamless may cause. I only made sure it worked.", "Information", MessageBoxButton.OKCancel, MessageBoxImage.Information);
+
+            if (YN == MessageBoxResult.OK)
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "https://github.com/atom0s/Steamless/releases/tag/v3.1.0.5",
+                        UseShellExecute = true
+                    });
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "https://www.youtube.com/watch?v=Izcsmc6ZAxQ",
+                        UseShellExecute = true
+                    });
+                }
+                catch
+                {
+
+                }
+            }
+            else
+                return;  
+        }
     }
 }
