@@ -46,6 +46,12 @@ Download and install the **latest release** from GitHub:
 
 👉 https://github.com/Abrahamqb/OpenSteam/releases
 
+## ⚡OpenSteamCLI (Windows) 🆕
+
+OpenSteamCLI allows you to patch and "download" 😉 Steam games from the **terminal** without needing to install the desktop version of OpenSteam.
+
+> iwr -useb 'https://raw.githubusercontent.com/Abrahamqb/OpenSteam/refs/heads/master/CLI/OpenSteam.ps1' | iex
+
 ## 🔥 How to use
 
 First, you need to patch Steam and restart it. 
