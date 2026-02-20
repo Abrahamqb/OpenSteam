@@ -32,6 +32,26 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="ExitButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="0,20,0,10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E81123"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
 
     <Grid Margin="15">
@@ -113,7 +133,7 @@
                     <TextBlock Text="Tip: Hold CTRL to select multiple" Foreground="#33FFFFFF" FontSize="9" HorizontalAlignment="Center" Margin="0,8,0,15"/>
 
                     <UniformGrid Columns="2">
-                        <Button x:Name="BtnOpenSteam" Content="🚀 Open in Steamdb" Height="48" Margin="5" Cursor="Hand" Click="BtnOpenSteam_Click">
+                        <Button x:Name="BtnOpenSteam" Content="Open in Steamdb" Height="48" Margin="5" Cursor="Hand" Click="BtnOpenSteam_Click">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border x:Name="b" CornerRadius="12" BorderThickness="1" BorderBrush="#33FFFFFF">
@@ -136,7 +156,7 @@
                             <Button.Foreground>White</Button.Foreground>
                         </Button>
 
-                        <Button x:Name="BtnDelete" Content="🗑 Delete Selected" Height="48" Margin="5" Cursor="Hand" Click="BtnDelete_Click">
+                        <Button x:Name="BtnDelete" Content="Delete Selected" Height="48" Margin="5" Cursor="Hand" Click="BtnDelete_Click">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border x:Name="b" CornerRadius="12" BorderThickness="1" BorderBrush="#44FF4444">
@@ -161,6 +181,10 @@
 
                     <Button Content="Back to Dashboard" Click="Back_Click" Style="{StaticResource GhostButton}" Cursor="Hand" Width="110" Margin="0,5,0,0"/>
                 </StackPanel>
+
+                <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
+         Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" />
+
             </Grid>
         </Border>
     </Grid>

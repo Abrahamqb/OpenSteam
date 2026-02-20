@@ -176,7 +176,7 @@
                             </Button.Background>
                         </Button>
 
-                        <Button x:Name="LuaManagerButton" Grid.Column="1" Content="📝 Manager" Style="{StaticResource DangerAction}" Height="50" Margin="6" Click="LuaManager_Click">
+                        <Button x:Name="LuaManagerButton" Grid.Column="1" Content="Manager" Style="{StaticResource DangerAction}" Height="50" Margin="6" Click="LuaManager_Click">
                             <Button.Background>
                                 <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
                                     <GradientStop Color="#FF4493FF" Offset="0"/>
