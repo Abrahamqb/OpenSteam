@@ -8,7 +8,7 @@ It also features a **manual section**, so you can easily install scripts that ar
 
 ![Status](https://img.shields.io/badge/status-%20release-green)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.1-blue)
 
 ---
 
