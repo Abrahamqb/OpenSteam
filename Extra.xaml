@@ -46,6 +46,25 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style x:Key="ExitButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="0,20,0,10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E81123"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="10">
@@ -87,7 +106,9 @@
                         </TextBlock.Effect>
                     </TextBlock>
 
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="317" Margin="0,0.5,0,15" Cursor="ScrollNS">
+                    <TextBlock x:Name="InfoVersion" Text=" " Foreground="#66FFFFFF" FontSize="11"/>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden" Height="370" Margin="0,0,0,15" Cursor="ScrollNS">
                         <StackPanel>
                             <TextBlock TextWrapping="Wrap" Foreground="#CCCCCC" FontSize="13" LineHeight="20" Margin="0,0,0,20"><Run Text="OpenSteam Extras are tools, &quot;hacks,&quot; bypasses, etc., useful for your games or your Steam environment. The creator of OpenSteam disclaims responsibility for misuse, malware infections, bans, etc., as most of these tools were not developed by me. But they do the job."/></TextBlock>
                             <Border Background="#15FFFFFF" CornerRadius="10" Padding="15" Margin="0,10,0,0" 
@@ -132,13 +153,11 @@
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-                    <Button Content="Close" Width="120" Height="35" 
-                            Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E"
-                            Click="Close_Click"/>
+                    
                 </StackPanel>
             </Grid>
         </Border>
-        <Rectangle x:Name="UpperLimit" HorizontalAlignment="Center" Height="2" Margin="0,60,0,0" Stroke="#66FFFFFF" VerticalAlignment="Top" Width="380" RenderTransformOrigin="0.5,0.5" Fill="#66FFFFFF">
+        <Rectangle x:Name="UpperLimit" HorizontalAlignment="Center" Height="2" Margin="0,70,0,0" Stroke="#66FFFFFF" VerticalAlignment="Top" Width="380" RenderTransformOrigin="0.5,0.5" Fill="#66FFFFFF">
             <Rectangle.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -148,7 +167,7 @@
                 </TransformGroup>
             </Rectangle.RenderTransform>
         </Rectangle>
-        <Rectangle x:Name="BottomLimit" HorizontalAlignment="Center" Height="2" Margin="0,382,0,0" Stroke="#66FFFFFF" VerticalAlignment="Top" Width="380" RenderTransformOrigin="0.5,0.5" Fill="#66FFFFFF">
+        <Rectangle x:Name="BottomLimit" HorizontalAlignment="Center" Height="2" Margin="0,440,0,0" Stroke="#66FFFFFF" VerticalAlignment="Top" Width="380" RenderTransformOrigin="0.5,0.5" Fill="#66FFFFFF">
             <Rectangle.RenderTransform>
                 <TransformGroup>
                     <ScaleTransform/>
@@ -158,5 +177,7 @@
                 </TransformGroup>
             </Rectangle.RenderTransform>
         </Rectangle>
+        <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
+         Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" />
     </Grid>
 </Window>

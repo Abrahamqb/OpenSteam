@@ -32,6 +32,25 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style x:Key="ExitButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="0,20,0,10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#E81123"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid Margin="10">
@@ -168,6 +187,9 @@
                     <TextBlock Text="Powered by Kernelos.org" Foreground="#33FFFFFF" 
                                FontSize="9" HorizontalAlignment="Center" Margin="0,20,0,0" MouseDown="PowerKernel_Click" Cursor="Hand"/>
                 </StackPanel>
+
+                <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
+         Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" />
             </Grid>
         </Border>
     </Grid>

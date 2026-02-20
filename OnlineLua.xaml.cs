@@ -96,5 +96,10 @@ namespace OpenSteam
             else
                 return;  
         }
+
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
