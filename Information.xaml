@@ -141,9 +141,6 @@
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-                    <Button Content="Close" Width="120" Height="35" 
-                            Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E"
-                            Click="Close_Click" d:IsHidden="True"/>
                 </StackPanel>
             </Grid>
         </Border>

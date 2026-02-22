@@ -22,11 +22,6 @@ namespace OpenSteam
             }
         }
 
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         public string URL(int option)
         {
             switch (option)

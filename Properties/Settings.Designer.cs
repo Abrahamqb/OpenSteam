@@ -22,5 +22,53 @@ namespace OpenSteam.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DeleteOnClose {
+            get {
+                return ((bool)(this["DeleteOnClose"]));
+            }
+            set {
+                this["DeleteOnClose"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoPatchLaunch {
+            get {
+                return ((bool)(this["AutoPatchLaunch"]));
+            }
+            set {
+                this["AutoPatchLaunch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CloseSteamBefore {
+            get {
+                return ((bool)(this["CloseSteamBefore"]));
+            }
+            set {
+                this["CloseSteamBefore"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DisableWebHelper {
+            get {
+                return ((bool)(this["DisableWebHelper"]));
+            }
+            set {
+                this["DisableWebHelper"] = value;
+            }
+        }
     }
 }

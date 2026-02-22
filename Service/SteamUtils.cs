@@ -28,12 +28,24 @@ namespace OpenSteam.Service
                         catch { }
                     }
                 }
-                ProcessStartInfo psi = new ProcessStartInfo
+                bool disableWeb = Properties.Settings.Default.DisableWebHelper;
+
+                if (disableWeb)
                 {
-                    FileName = "steam://flushconfig",
-                    UseShellExecute = true
-                };
-                Process.Start(psi);
+                    string steamPath = GetSteamPath();
+                    string steamExe = Path.Combine(steamPath, "steam.exe");
+
+                    Process.Start(steamExe, "-no-browser +open steam://open/minigameslist");
+                }
+                else
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo
+                    {
+                        FileName = "steam://flushconfig",
+                        UseShellExecute = true
+                    };
+                    Process.Start(psi);
+                }
             }
             catch (Exception ex)
             {
