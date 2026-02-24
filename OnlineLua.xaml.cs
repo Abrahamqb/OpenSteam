@@ -59,14 +59,35 @@ namespace OpenSteam
             this.Close();
         }
 
-        private void Search_Click(object sender, RoutedEventArgs e)
+        private async void Search_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(SearchBox.Text))
+            {
+                MessageBox.Show("Please enter an AppID first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             ButtonSearch.IsEnabled = false;
-            ButtonSearch.Opacity = 0.2;
-            LuaLoaders luaLoaders = new LuaLoaders();
-            var response = luaLoaders.OnlineLoad(SearchBox.Text, SteamUtils.GetSteamPath());
-            ButtonSearch.IsEnabled = true;
-            ButtonSearch.Opacity = 1.0;
+            ButtonSearch.Opacity = 0.6;
+            ButtonText.Visibility = Visibility.Collapsed;
+            ButtonProgress.Visibility = Visibility.Visible;
+
+            try
+            {
+                LuaLoaders luaLoaders = new LuaLoaders();
+                await luaLoaders.OnlineLoad(SearchBox.Text, SteamUtils.GetSteamPath());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                ButtonSearch.IsEnabled = true;
+                ButtonSearch.Opacity = 1.0;
+                ButtonText.Visibility = Visibility.Visible;
+                ButtonProgress.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Fix65432(object sender, RoutedEventArgs e)

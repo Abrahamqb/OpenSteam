@@ -155,16 +155,30 @@
                                 </TextBlock>
                             </Grid>
 
-                            <Button x:Name="ButtonSearch" Content="Cloud Search" 
-                                    Height="50" Style="{StaticResource ModernButtonStyle}" 
-                                    Click="Search_Click">
+                            <Button x:Name="ButtonSearch" 
+                                Height="50" 
+                                Style="{StaticResource ModernButtonStyle}" 
+                                Click="Search_Click">
                                 <Button.Background>
                                     <LinearGradientBrush EndPoint="1,0" StartPoint="0,0">
                                         <GradientStop Color="#007ACC" Offset="0"/>
                                         <GradientStop Color="#6A2B9A" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Button.Background>
+
+                                <Grid>
+                                    <TextBlock x:Name="ButtonText" Text="Cloud Search" VerticalAlignment="Center"/>
+
+                                    <ProgressBar x:Name="ButtonProgress" 
+                                     IsIndeterminate="True" 
+                                     Width="100" Height="4" 
+                                     Visibility="Collapsed"
+                                     Foreground="White" 
+                                     Background="Transparent" 
+                                     BorderThickness="0"/>
+                                </Grid>
                             </Button>
+                            
                             <Button x:Name="FixError" Content="Fix Error 6:0000065432" 
                             Height="34" Margin="0,10,0,0" Style="{StaticResource ModernButtonStyle}" 
                             Click="Fix65432" Width="197">
