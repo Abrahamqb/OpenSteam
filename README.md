@@ -14,9 +14,9 @@ It also features a **manual installation section**, so you can install scripts t
 
 ## Preview
 
-![Project Preview](https://i.postimg.cc/y8YJJsBM/v0-2-3-beta.png)
+![Project Preview](https://i.postimg.cc/C57NwqFC/v2.png)
 
-> Reference version: **0.2.3 beta**. The visual design is subject to change in future releases.
+> Reference version: **v2.0.0**.
 
 ---
 
@@ -34,7 +34,6 @@ It also features a **manual installation section**, so you can install scripts t
 
 - **C#**
 - **Native libraries and modified DLLs** (responsible for injection)
-- **API:** [Kernelos.org](https://kernelos.org/)
 
 ---
 
