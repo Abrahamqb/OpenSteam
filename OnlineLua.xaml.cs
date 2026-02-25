@@ -18,13 +18,38 @@ using System.Diagnostics;
 namespace OpenSteam
 {
     /// <summary>
-    /// Lógica de interacción para OnlineLua.xaml
     /// </summary>
     public partial class OnlineLua : Window
     {
         public OnlineLua()
         {
             InitializeComponent();
+            LoadData();
+        }
+
+        private List<Game> CachedList = new List<Game>();
+
+        private async void LoadData()
+        {
+            ButtonSearch.IsEnabled = false;
+            ButtonSearch.Opacity = 0.6;
+            ButtonText.Visibility = Visibility.Collapsed;
+            ButtonProgress.Visibility = Visibility.Visible;
+
+            try
+            {
+                CachedList = await SteamUtils.DownloadGameListAsync();
+            } catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load game data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                ButtonSearch.IsEnabled = true;
+                ButtonSearch.Opacity = 1.0;
+                ButtonText.Visibility = Visibility.Visible;
+                ButtonProgress.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -35,7 +60,7 @@ namespace OpenSteam
             }
         }
 
-        private void PowerKernel_Click(object sender, MouseButtonEventArgs e)
+        /*private void PowerKernel_Click(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -52,7 +77,7 @@ namespace OpenSteam
 
                 }
             }
-        }
+        }*/
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
@@ -61,6 +86,9 @@ namespace OpenSteam
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
+            LuaLoaders luaLoaders = new LuaLoaders();
+            string steamPath = SteamUtils.GetSteamPath();
+
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
             {
                 MessageBox.Show("Please enter an AppID first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -74,8 +102,41 @@ namespace OpenSteam
 
             try
             {
-                LuaLoaders luaLoaders = new LuaLoaders();
-                await luaLoaders.OnlineLoad(SearchBox.Text, SteamUtils.GetSteamPath());
+                string userInput = SearchBox.Text;
+
+                var results = SteamUtils.GetFilteredGames(userInput, CachedList);
+
+                if (results == null || !results.Any())
+                {
+                    MessageBox.Show("No games found with that ID or Name.", "Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;   
+                }
+
+                var selectedGame = results.First();
+
+                Console.WriteLine($"Processing: {selectedGame.name}");
+                Console.WriteLine($"ID: {selectedGame.appid} | NSFW: {selectedGame.nsfw} | DRM: {selectedGame.drm}");
+
+                if (selectedGame.nsfw)
+                {
+
+                    if (MessageBoxResult.No == MessageBox.Show("This game is marked as NSFW. The Lua file may contain inappropriate content. Do you want to continue?", "NSFW Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    {
+                        return;
+                    }
+                }
+                if(selectedGame.drm)
+                {
+                    if (MessageBoxResult.No == MessageBox.Show("This game has DRM. The Lua file may not work correctly or may require an external bypass. Do you want to continue?", "DRM Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    {
+                        return;
+                    }
+
+                }
+
+
+                await luaLoaders.OnlineLoad(selectedGame.appid, steamPath);
+
             }
             catch (Exception ex)
             {
@@ -118,9 +179,6 @@ namespace OpenSteam
                 return;  
         }
 
-        private void ExitButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        private void ExitButton_Click(object sender, RoutedEventArgs e){this.Close();}
     }
 }

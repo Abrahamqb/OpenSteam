@@ -139,7 +139,7 @@
                                     </TextBox.Resources>
                                 </TextBox>
 
-                                <TextBlock IsHitTestVisible="False" Text="Enter AppID..." 
+                                <TextBlock IsHitTestVisible="False" Text="Enter AppID or Name..." 
                                            VerticalAlignment="Center" HorizontalAlignment="Left" 
                                            Margin="18,0,0,0" Foreground="#44FFFFFF" FontSize="16">
                                     <TextBlock.Style>
@@ -199,7 +199,7 @@
                             Cursor="Hand" Click="Back_Click"/>
 
                     <TextBlock Text="Powered by Kernelos.org" Foreground="#33FFFFFF" 
-                               FontSize="9" HorizontalAlignment="Center" Margin="0,20,0,0" MouseDown="PowerKernel_Click" Cursor="Hand"/>
+                               FontSize="9" HorizontalAlignment="Center" Margin="0,20,0,0" Cursor="Hand" Visibility="Collapsed" Opacity="0" av:IsHidden="True" av:IsLocked="True"/>
                 </StackPanel>
 
                 <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 

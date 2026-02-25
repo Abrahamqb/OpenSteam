@@ -27,7 +27,7 @@ namespace OpenSteam.Service
             OpenFileDialog luaLoader = new OpenFileDialog
             {
                 Filter = "Lua Files|*.lua",
-                Title = "Seleccionar Script Lua"
+                Title = "select Lua"
             };
 
             if (luaLoader.ShowDialog() == true)
@@ -55,7 +55,8 @@ namespace OpenSteam.Service
             }
         }
 
-        public async Task OnlineLoad(string ID, string path)
+        //Old option explained in case the new one stops working
+        /*public async Task OnlineLoad(string ID, string path)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -100,6 +101,70 @@ namespace OpenSteam.Service
                     });
 
                     NotificationWindow win = new NotificationWindow($"¡Script {ID}.lua successfully loaded!", 2);
+                    win.Show();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Something went wrong: {ex.Message}", "Error");
+                }
+                finally
+                {
+                    if (File.Exists(tempZip)) File.Delete(tempZip);
+                }
+            }
+        }*/
+
+        public async Task OnlineLoad(string ID, string path)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
+
+                string luaPathSteam = Path.Combine(path, "config", "stplug-in");
+                string ManifestPathSteam = Path.Combine(path, "depotcache");
+                string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
+
+                try
+                {
+                    string fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/" + ID;
+                    byte[] zipBytes = await client.GetByteArrayAsync(fullLink);
+                    await File.WriteAllBytesAsync(tempZip, zipBytes);
+
+                    await Task.Run(() =>
+                    {
+                        if (!Directory.Exists(luaPathSteam))
+                            Directory.CreateDirectory(luaPathSteam);
+
+                        string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
+
+                        string extractPath = Path.Combine(Path.GetTempPath(), "Extract_" + ID);
+                        if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
+
+                        ZipFile.ExtractToDirectory(tempZip, extractPath);
+
+                        string FinalExtractedFolder = Directory.GetDirectories(extractPath).FirstOrDefault() ?? extractPath;
+
+                        string[] Manifest = Directory.GetFiles(FinalExtractedFolder, "*.manifest", SearchOption.AllDirectories);
+                        string[] files = Directory.GetFiles(FinalExtractedFolder, "*.lua", SearchOption.AllDirectories);
+
+                        if (files.Length > 0)
+                        {
+                            if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
+                            File.Move(files[0], finalLuaFile);
+                        }
+                        if (Manifest.Length > 0)
+                        {
+                            foreach (string manifest in Manifest)
+                            {
+                                string destManifest = Path.Combine(ManifestPathSteam, Path.GetFileName(manifest));
+                                if (File.Exists(destManifest)) File.Delete(destManifest);
+                                File.Move(manifest, destManifest);
+                            }
+                        }
+                        Directory.Delete(extractPath, true);
+                    });
+
+                    NotificationWindow win = new NotificationWindow($"¡Lua and Manifest successfully loaded!", 2);
                     win.Show();
                 }
                 catch (Exception ex)
