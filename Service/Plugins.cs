@@ -1,14 +1,7 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace OpenSteam.Service
@@ -77,11 +70,11 @@ namespace OpenSteam.Service
                         Directory.Delete(targetPluginDir, true);
                     }
 
-                    try 
+                    try
                     {
                         ZipFile.ExtractToDirectory(tempZip, pluginsFolder);
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         MessageBox.Show("The KernelLua ZIP file is corrupt. Or it may already exist (Continue to try again)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         Thread.Sleep(800);

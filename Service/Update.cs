@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace OpenSteam.Service
@@ -36,8 +29,12 @@ namespace OpenSteam.Service
 
                     if (latestVersion > currentVersion)
                     {
-                        MessageBox.Show($"A new version is available: v{latestVersion}\n\nYou are using: v{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build}",
-                            "Update Available", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (MessageBoxResult.Yes == MessageBox.Show($"A new version is available: v{latestVersion}\n\nYou are using: v{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build} \nDo you want to update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Information))
+                        {
+                            NotificationWindow win = new NotificationWindow("Updating... May take a few seconds :)", 5);
+                            win.Show();
+                            await DownloadAndInstallUpdate();
+                        }
                     }
                 }
             }
@@ -47,6 +44,34 @@ namespace OpenSteam.Service
             }
         }
 
+        private static async Task DownloadAndInstallUpdate()
+        {
+            string appPath = Process.GetCurrentProcess().MainModule.FileName;
+            string appDir = Path.GetDirectoryName(appPath);
+            string newAppPath = Path.Combine(appDir, "OpenSteam_new.exe");
+
+            using (HttpClient client = new HttpClient())
+            {
+                byte[] data = await client.GetByteArrayAsync("https://github.com/abrahamqb/OpenSteam/releases/latest/download/OpenSteam.exe");
+                await File.WriteAllBytesAsync(newAppPath, data);
+            }
+
+            string batchCode = $@"
+@echo off
+timeout /t 2 /nobreak > nul
+del ""{appPath}""
+ren ""{newAppPath}"" ""{Path.GetFileName(appPath)}""
+start """" ""{appPath}""
+del ""%~f0""
+";
+
+            string batchPath = Path.Combine(appDir, "updater.bat");
+            File.WriteAllText(batchPath, batchCode);
+
+
+            Process.Start(new ProcessStartInfo { FileName = batchPath, CreateNoWindow = true, UseShellExecute = false });
+            Application.Current.Shutdown();
+        }
         public static async Task GetNews()
         {
             try
@@ -55,10 +80,10 @@ namespace OpenSteam.Service
                 string NameNews = "/News.txt";
                 await Task.Run(() =>
                 {
-                    if (!File.Exists(TempPath+NameNews))
+                    if (!File.Exists(TempPath + NameNews))
                     {
                         Directory.CreateDirectory(TempPath);
-                        File.Create(TempPath+NameNews).Close();
+                        File.Create(TempPath + NameNews).Close();
                     }
                 });
 
@@ -72,16 +97,16 @@ namespace OpenSteam.Service
                         return;
                     }
 
-                    if (NewsInfo != File.ReadAllText(TempPath+NameNews))
+                    if (NewsInfo != File.ReadAllText(TempPath + NameNews))
                     {
                         MessageBox.Show($"{NewsInfo}", "Dev", MessageBoxButton.OK, MessageBoxImage.Information);
-                        File.WriteAllText(TempPath+NameNews, NewsInfo);
+                        File.WriteAllText(TempPath + NameNews, NewsInfo);
                     }
                 }
             }
             catch
             {
-                
+
             }
         }
 

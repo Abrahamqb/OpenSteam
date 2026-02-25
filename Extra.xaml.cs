@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
 
 namespace OpenSteam
 {
@@ -58,7 +57,8 @@ namespace OpenSteam
                     FileName = URL(1),
                     UseShellExecute = true
                 });
-            } catch{ }
+            }
+            catch { }
         }
 
         private void nlgl(object sender, MouseButtonEventArgs e)

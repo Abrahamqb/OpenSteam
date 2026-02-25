@@ -1,12 +1,8 @@
 ﻿using OpenSteam.Service;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -74,10 +70,10 @@ namespace OpenSteam
                         cleanName = cleanName.Split(new[] { " en " }, StringSplitOptions.None).Last();
                     }
 
-                    return cleanName.Trim()+" (OpenSteam)";
+                    return cleanName.Trim() + " (OpenSteam)";
                 }
             }
-            catch 
+            catch
             {
                 return $"Connection error: {appId}.lua";
             }
@@ -103,9 +99,11 @@ namespace OpenSteam
                 };
                 LuaListBox.Items.Add(item);
 
-                _ = Task.Run(async () => {
+                _ = Task.Run(async () =>
+                {
                     string realName = await GetGameName(id);
-                    Dispatcher.Invoke(() => {
+                    Dispatcher.Invoke(() =>
+                    {
                         item.Content = $"{realName}";
                     });
                 });

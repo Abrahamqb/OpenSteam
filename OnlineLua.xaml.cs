@@ -1,19 +1,7 @@
 ﻿using OpenSteam.Service;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Input;
 
 namespace OpenSteam
 {
@@ -39,7 +27,8 @@ namespace OpenSteam
             try
             {
                 CachedList = await SteamUtils.DownloadGameListAsync();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to load game data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -109,7 +98,7 @@ namespace OpenSteam
                 if (results == null || !results.Any())
                 {
                     MessageBox.Show("No games found with that ID or Name.", "Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;   
+                    return;
                 }
 
                 var selectedGame = results.First();
@@ -119,7 +108,7 @@ namespace OpenSteam
 
                 if (selectedGame.nsfw)
                 {
-                    if(Properties.Settings.Default.DisableNFSWAlert == false)
+                    if (Properties.Settings.Default.DisableNFSWAlert == false)
                     {
                         if (MessageBoxResult.No == MessageBox.Show("This game is marked as NSFW. The Lua file may contain inappropriate content. Do you want to continue?. \nYou can disable this NSFW alert from the settings", "NSFW Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
                         {
@@ -127,7 +116,7 @@ namespace OpenSteam
                         }
                     }
                 }
-                if(selectedGame.drm)
+                if (selectedGame.drm)
                 {
                     if (MessageBoxResult.No == MessageBox.Show("This game has DRM. The Lua file may not work correctly or may require an external bypass. Do you want to continue?", "DRM Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
                     {
@@ -178,9 +167,9 @@ namespace OpenSteam
                 }
             }
             else
-                return;  
+                return;
         }
 
-        private void ExitButton_Click(object sender, RoutedEventArgs e){this.Close();}
+        private void ExitButton_Click(object sender, RoutedEventArgs e) { this.Close(); }
     }
 }
