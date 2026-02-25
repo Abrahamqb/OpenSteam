@@ -113,7 +113,7 @@ namespace OpenSteam.Service
                 client.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
 
                 string luaPathSteam = Path.Combine(path, "config", "stplug-in");
-                string ManifestPathSteam = Path.Combine(path, "depotcache");
+                string ManifestPathSteam = Path.Combine(path, "config", "depotcache");
                 string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
 
                 try
@@ -126,6 +126,9 @@ namespace OpenSteam.Service
                     {
                         if (!Directory.Exists(luaPathSteam))
                             Directory.CreateDirectory(luaPathSteam);
+
+                        if (!Directory.Exists(ManifestPathSteam))
+                            Directory.CreateDirectory(ManifestPathSteam);
 
                         string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
 
