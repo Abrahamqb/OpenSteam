@@ -41,10 +41,6 @@ namespace OpenSteam
                 State();
             }
 
-            AutoPatch_.IsChecked = Properties.Settings.Default.AutoPatchLaunch;
-            DisableWebHelper_.IsChecked = Properties.Settings.Default.DisableWebHelper;
-            CloseSteamPatch_.IsChecked = Properties.Settings.Default.CloseSteamBefore;
-            DeleteAutoPatch_.IsChecked = Properties.Settings.Default.DeleteOnClose;
         }
 
         public void State()
@@ -156,6 +152,13 @@ namespace OpenSteam
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             FadeOut(MainMenu, SettingsPanel);
+
+            //Update Settings
+            AutoPatch_.IsChecked = Properties.Settings.Default.AutoPatchLaunch;
+            DisableWebHelper_.IsChecked = Properties.Settings.Default.DisableWebHelper;
+            CloseSteamPatch_.IsChecked = Properties.Settings.Default.CloseSteamBefore;
+            DeleteAutoPatch_.IsChecked = Properties.Settings.Default.DeleteOnClose;
+            DisableNFSWAlert_.IsChecked = Properties.Settings.Default.DisableNFSWAlert;
         }
         
         private void BackToMenu_Click(object sender, RoutedEventArgs e)
@@ -227,6 +230,11 @@ namespace OpenSteam
         {
             Properties.Settings.Default.DisableWebHelper = !Properties.Settings.Default.DisableWebHelper;
 
+        }
+
+        private void DisableNFSWAlert(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.DisableNFSWAlert = !Properties.Settings.Default.DisableNFSWAlert;
         }
     }
 }

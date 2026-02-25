@@ -119,10 +119,12 @@ namespace OpenSteam
 
                 if (selectedGame.nsfw)
                 {
-
-                    if (MessageBoxResult.No == MessageBox.Show("This game is marked as NSFW. The Lua file may contain inappropriate content. Do you want to continue?", "NSFW Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    if(Properties.Settings.Default.DisableNFSWAlert == false)
                     {
-                        return;
+                        if (MessageBoxResult.No == MessageBox.Show("This game is marked as NSFW. The Lua file may contain inappropriate content. Do you want to continue?. \nYou can disable this NSFW alert from the settings", "NSFW Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                        {
+                            return;
+                        }
                     }
                 }
                 if(selectedGame.drm)

@@ -141,9 +141,8 @@
 
                 <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" Panel.ZIndex="10"/>
-
                 <StackPanel x:Name="MainMenu" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,1,0,0">
-                    <Image Height="45" Width="49" Source="/8669e97b288da32670e77181618c3dfb.png"/>
+                    <Image Height="45" Width="49"/>
                     <TextBlock Text="OPENSTEAM MANAGER" Foreground="White" FontSize="22" FontWeight="ExtraBold" HorizontalAlignment="Center">
                         <TextBlock.Effect>
                             <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.3"/>
@@ -198,13 +197,14 @@
                 </StackPanel>
 
                 <Grid x:Name="SettingsPanel" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0" Visibility="Collapsed">
-                    <Border Background="#161616" Width="400" Height="400" CornerRadius="15" BorderThickness="1" BorderBrush="#33FFFFFF" VerticalAlignment="Top">
+                    <Border Width="400" Height="414" CornerRadius="15" BorderThickness="1" BorderBrush="#33FFFFFF" VerticalAlignment="Top">
                         <StackPanel Margin="20" Height="372" VerticalAlignment="Top">
                             <TextBlock Text="SETTINGS" Foreground="White" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                             <TextBlock Text="GENERAL" Foreground="#007ACC" FontSize="12" FontWeight="Bold" Margin="0,0,0,10"/>
                             <CheckBox x:Name="DeleteAutoPatch_" Content="Delete patch on close" Foreground="White" Margin="0,5" Checked="DeleteAutoPatch"/>
                             <CheckBox x:Name="AutoPatch_" Content="Auto-Patch on Launch" Foreground="White" Margin="0,5" Checked="AutoPatch"/>
                             <CheckBox x:Name="CloseSteamPatch_" Content="Close Steam before Patching" Foreground="White" Margin="0,5" Checked="CloseSteamPatch"/>
+                            <CheckBox x:Name="DisableNFSWAlert_" Content="Disable the NSFW alert" Foreground="White" Margin="0,5" Checked="DisableNFSWAlert"/>
 
                             <TextBlock Text="STEAM" Foreground="#007ACC" FontSize="12" FontWeight="Bold" Margin="0,10,0,10"/>
                             <Button Content="CLEAN STEAM CACHE" Style="{StaticResource DangerAction}" Height="25" Margin="0,0,0,10" FontSize="10" Click="CleanCache_Click"/>

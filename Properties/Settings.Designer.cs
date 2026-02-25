@@ -70,5 +70,17 @@ namespace OpenSteam.Properties {
                 this["DisableWebHelper"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DisableNFSWAlert {
+            get {
+                return ((bool)(this["DisableNFSWAlert"]));
+            }
+            set {
+                this["DisableNFSWAlert"] = value;
+            }
+        }
     }
 }
