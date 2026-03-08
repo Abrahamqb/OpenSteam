@@ -48,7 +48,7 @@ function PatchSteam {
     Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
     Write-Host "Patching Steam, please wait a few seconds..." -ForegroundColor Gray
     Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/xinput1_4.dll" -OutFile "$steamPath\xinput1_4.dll"
-    #Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/hid.dll" -OutFile "$steamPath\hid.dll"
+    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/hid.dll" -OutFile "$steamPath\hid.dll"
     Write-Host "Steam patched successfully!" -ForegroundColor Green
     Write-Host "Press any key to continue..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
@@ -61,7 +61,7 @@ function DeletePatchSteam {
     Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
     Write-Host "Deleting Path Steam, please wait a few seconds..." -ForegroundColor Red
     Remove-Item "$steamPath\xinput1_4.dll" -Recurse -Force
-    #Remove-Item "$steamPath\hid.dll" -Recurse -Force
+    Remove-Item "$steamPath\hid.dll" -Recurse -Force
     Write-Host "Path Steam deleted successfully!" -ForegroundColor Green
     Write-Host "Press any key to continue..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
