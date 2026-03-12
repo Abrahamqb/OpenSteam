@@ -47,7 +47,7 @@ function PatchSteam {
     Write-Host " --- Patch Steam --- " -ForegroundColor Cyan
     Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
     Write-Host "Patching Steam, please wait a few seconds..." -ForegroundColor Gray
-    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/xinput1_4.dll" -OutFile "$steamPath\xinput1_4.dll"
+    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/dwmapi.dll" -OutFile "$steamPath\dwmapi.dll"
     Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/hid.dll" -OutFile "$steamPath\hid.dll"
     Write-Host "Steam patched successfully!" -ForegroundColor Green
     Write-Host "Press any key to continue..." -ForegroundColor Gray
@@ -177,7 +177,7 @@ while ($true) {
     Write-Host $asciiArt -ForegroundColor Cyan
 
     Write-Host " =====================================================================" -ForegroundColor Gray
-    $patchStatus = if (Test-Path "$steamPath\xinput1_4.dll") { "[PATCHED]" } else { "[NOT PATCHED]" }
+    $patchStatus = if (Test-Path "$steamPath\hid.dll") { "[PATCHED]" } else { "[NOT PATCHED]" }
     $statusColor = if ($patchStatus -eq "[PATCHED]") { "Green" } else { "Red" }
     Write-Host " 1. Patch Steam $patchStatus" -ForegroundColor $statusColor
     Write-Host " 2. Remove Patch" -ForegroundColor Red
