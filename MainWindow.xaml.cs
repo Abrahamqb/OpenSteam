@@ -34,7 +34,7 @@ namespace OpenSteam
 
         public void State()
         {
-            if (File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "xinput1_4.dll")) && File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")))
+            if (File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")) && File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")))
             {
                 ParcheEstado.Text = "Status: System Ready";
                 StatusDot.Fill = Brushes.LimeGreen;

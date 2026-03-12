@@ -89,5 +89,15 @@ namespace OpenSteam.Properties {
                 return ((byte[])(obj));
             }
         }
+
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Byte[].
+        /// </summary>
+        internal static byte[] dwmapi {
+            get {
+                object obj = ResourceManager.GetObject("dwmapi", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
