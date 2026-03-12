@@ -60,7 +60,7 @@ function DeletePatchSteam {
     Write-Host " --- Delete Patch Steam --- " -ForegroundColor Cyan
     Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
     Write-Host "Deleting Path Steam, please wait a few seconds..." -ForegroundColor Red
-    Remove-Item "$steamPath\xinput1_4.dll" -Recurse -Force
+    #Remove-Item "$steamPath\xinput1_4.dll" -Recurse -Force
     Remove-Item "$steamPath\dwmapi.dll" -Recurse -Force
     Remove-Item "$steamPath\hid.dll" -Recurse -Force
     Write-Host "Path Steam deleted successfully!" -ForegroundColor Green
@@ -206,3 +206,4 @@ while ($true) {
         }
     }
 }
+
