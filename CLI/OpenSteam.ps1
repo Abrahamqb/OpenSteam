@@ -47,7 +47,7 @@ function PatchSteam {
     Write-Host " --- Patch Steam --- " -ForegroundColor Cyan
     Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
     Write-Host "Patching Steam, please wait a few seconds..." -ForegroundColor Gray
-    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/dwmapi.dll" -OutFile "$steamPath\dwmapi.dll"
+    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/dwmapi.dll" -OutFile "$steamPath\xinput1_4.dll"
     Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/hid.dll" -OutFile "$steamPath\hid.dll"
     Write-Host "Steam patched successfully!" -ForegroundColor Green
     Write-Host "Press any key to continue..." -ForegroundColor Gray
@@ -60,9 +60,9 @@ function DeletePatchSteam {
     Write-Host " --- Delete Patch Steam --- " -ForegroundColor Cyan
     Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
     Write-Host "Deleting Path Steam, please wait a few seconds..." -ForegroundColor Red
-    #Remove-Item "$steamPath\xinput1_4.dll" -Recurse -Force
-    Remove-Item "$steamPath\dwmapi.dll" -Recurse -Force
-    Remove-Item "$steamPath\hid.dll" -Recurse -Force
+    if (Test-Path "$steamPath\xinput1_4.dll") { Remove-Item "$steamPath\xinput1_4.dll" -Recurse -Force }
+    if (Test-Path "$steamPath\dwmapi.dll") { Remove-Item "$steamPath\dwmapi.dll" -Recurse -Force }
+    if (Test-Path "$steamPath\hid.dll") { Remove-Item "$steamPath\hid.dll" -Recurse -Force }
     Write-Host "Path Steam deleted successfully!" -ForegroundColor Green
     Write-Host "Press any key to continue..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
@@ -202,7 +202,7 @@ while ($true) {
     Write-Host " 2. Remove Patch" -ForegroundColor Red
     Write-Host " 3. Search Game" -ForegroundColor Blue
     Write-Host " 4. Install Millennium (Plugin Loader)" -ForegroundColor Yellow
-    Write-Host " 5. Download KernelLua (Plugin)" -ForegroundColor Yellow
+    Write-Host " 5. Download KernelLua (Plugin) (NOT WORKING)" -ForegroundColor Yellow
     Write-Host " 6. Download OpenSteam.exe to Desktop" -ForegroundColor Blue
     Write-Host " 7. Restart Steam" -ForegroundColor Magenta
     Write-Host " 8. Exit" -ForegroundColor Red
