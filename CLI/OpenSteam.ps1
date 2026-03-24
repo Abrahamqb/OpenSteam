@@ -202,7 +202,7 @@ while ($true) {
     Write-Host " 2. Remove Patch" -ForegroundColor Red
     Write-Host " 3. Search Game" -ForegroundColor Blue
     Write-Host " 4. Install Millennium (Plugin Loader)" -ForegroundColor Yellow
-    Write-Host " 5. Download KernelLua (Plugin)" -ForegroundColor Yellow
+    Write-Host " 5. Download KernelLua (Plugin) (Not working)" -ForegroundColor Yellow
     Write-Host " 6. Download OpenSteam.exe to Desktop" -ForegroundColor Blue
     Write-Host " 7. Restart Steam" -ForegroundColor Magenta
     Write-Host " 8. Exit" -ForegroundColor Red
