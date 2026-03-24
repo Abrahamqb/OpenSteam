@@ -61,7 +61,7 @@ namespace OpenSteam.Service
                 using (HttpClient client = new HttpClient())
                 {
                     client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-                    byte[] zipBytes = await client.GetByteArrayAsync("https://tu-url-real/LuaManager.zip");
+                    byte[] zipBytes = await client.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Plugins/LuaManager.zip");
                     await File.WriteAllBytesAsync(tempZip, zipBytes);
                 }
 
