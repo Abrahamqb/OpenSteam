@@ -71,41 +71,59 @@ function DeletePatchSteam {
 #3
 function SearchGame {
     Clear-Host
-    Write-Host " --- Search & Load Game Lua (KernelOS) --- " -ForegroundColor Cyan
+    Write-Host " --- Search & Load Game Lua and Manifest --- " -ForegroundColor Cyan
 
     $ID = Read-Host " Enter the Game ID (e.g., 12345)"
     if ([string]::IsNullOrWhiteSpace($ID)) { return }
 
-    $checkUrl = "https://kernelos.org/games/download.php?gen=1&id=$ID"
     $luaPathSteam = Join-Path $steamPath "config\stplug-in"
+    $manifestPathSteam = Join-Path $steamPath "config\depotcache"
     $tempZip = Join-Path $env:TEMP "Lua_$ID.zip"
     $extractPath = Join-Path $env:TEMP "Extract_$ID"
 
     try {
-        Write-Host " Connecting to KernelOS API..." -ForegroundColor Gray
-        $response = Invoke-RestMethod -Uri $checkUrl -Headers @{"User-Agent"="OpenSteam-Manager/1.0"}
-        if ($null -eq $response.url) {
-            Write-Host " Error: Game ID not found or invalid response." -ForegroundColor Red
-            pause
-            return
-        }
-        $fullLink = "https://kernelos.org" + $response.url
-        Write-Host " Downloading Lua" -ForegroundColor Blue
-        Invoke-WebRequest -Uri $fullLink -OutFile $tempZip -ErrorAction Stop
+        Write-Host " Connecting to DataBase..." -ForegroundColor Gray
+        $fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/$ID"
+        Write-Host " Downloading Lua and Manifest..." -ForegroundColor Blue
+        Invoke-WebRequest -Uri $fullLink -OutFile $tempZip -Headers @{"User-Agent"="OpenSteam-Manager/1.0"} -ErrorAction Stop
+
         if (-not (Test-Path $luaPathSteam)) {
             New-Item -ItemType Directory -Path $luaPathSteam -Force | Out-Null
         }
+        if (-not (Test-Path $manifestPathSteam)) {
+            New-Item -ItemType Directory -Path $manifestPathSteam -Force | Out-Null
+        }
+
         if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
         Write-Host " Extracting files..." -ForegroundColor Gray
         Expand-Archive -Path $tempZip -DestinationPath $extractPath -Force
-        $luaFile = Get-ChildItem -Path $extractPath -Filter "*.lua" -Recurse | Select-Object -First 1
-        if ($null -ne $luaFile) {
-            $finalLuaFile = Join-Path $luaPathSteam "$ID.lua"
-            Move-Item -Path $luaFile.FullName -Destination $finalLuaFile -Force
-            Write-Host " Script $ID.lua successfully loaded!" -ForegroundColor Green
+
+        $finalExtractedFolder = Get-ChildItem -Path $extractPath -Directory | Select-Object -First 1
+        if ($null -ne $finalExtractedFolder) {
+            $finalExtractedFolder = $finalExtractedFolder.FullName
+        } else {
+            $finalExtractedFolder = $extractPath
         }
-        else {
+
+        $manifestFiles = @(Get-ChildItem -Path $finalExtractedFolder -Filter "*.manifest" -Recurse)
+        $luaFiles = @(Get-ChildItem -Path $finalExtractedFolder -Filter "*.lua" -Recurse)
+
+        if ($luaFiles.Count -gt 0) {
+            $finalLuaFile = Join-Path $luaPathSteam "$ID.lua"
+            if (Test-Path $finalLuaFile) { Remove-Item $finalLuaFile -Force }
+            Move-Item -Path $luaFiles[0].FullName -Destination $finalLuaFile -Force
+            Write-Host " Script $ID.lua successfully loaded!" -ForegroundColor Green
+        } else {
             Write-Host " Error: No .lua file found inside the ZIP." -ForegroundColor Red
+        }
+
+        if ($manifestFiles.Count -gt 0) {
+            foreach ($manifest in $manifestFiles) {
+                $destManifest = Join-Path $manifestPathSteam $manifest.Name
+                if (Test-Path $destManifest) { Remove-Item $destManifest -Force }
+                Move-Item -Path $manifest.FullName -Destination $destManifest -Force
+            }
+            Write-Host " Manifest(s) successfully loaded!" -ForegroundColor Green
         }
     }
     catch {
