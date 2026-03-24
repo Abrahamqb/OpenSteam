@@ -154,14 +154,14 @@ function InstallMillennium {
 }
 
 #5
-function DownloadKernelLua {
+function DownloadLuaManager {
     Clear-Host
-    write-Host " --- Download KernelLua (Plugin / KernelOS.org) --- " -ForegroundColor Cyan
+    write-Host " --- Download LuaManager (Plugin) --- " -ForegroundColor Cyan
     if (-not (Test-Path "$steamPath\plugins")) { New-Item -ItemType Directory -Path "$steamPath\plugins" | Out-Null }
-    Write-Host "Downloading KernelLua..." -ForegroundColor Gray
-    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/KernelLua.zip" -OutFile "$tempFolder\KernelLua.zip"
+    Write-Host "Downloading LuaManager..." -ForegroundColor Gray
+    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Plugins/LuaManager.zip" -OutFile "$tempFolder\LuaManager.zip"
     Write-Host "Extracting to plugins folder..." -ForegroundColor Green
-    Expand-Archive -Path "$tempFolder\KernelLua.zip" -DestinationPath "$steamPath\plugins\" -Force
+    Expand-Archive -Path "$tempFolder\LuaManager.zip" -DestinationPath "$steamPath\plugins\" -Force
     Write-Host "Done! Remember to activate it in Millennium settings." -ForegroundColor Yellow
     pause
 }
@@ -202,7 +202,7 @@ while ($true) {
     Write-Host " 2. Remove Patch" -ForegroundColor Red
     Write-Host " 3. Search Game" -ForegroundColor Blue
     Write-Host " 4. Install Millennium (Plugin Loader)" -ForegroundColor Yellow
-    Write-Host " 5. Download KernelLua (Plugin) (NOT WORKING)" -ForegroundColor Yellow
+    Write-Host " 5. Download LuaManager (Plugin)" -ForegroundColor Yellow
     Write-Host " 6. Download OpenSteam.exe to Desktop" -ForegroundColor Blue
     Write-Host " 7. Restart Steam" -ForegroundColor Magenta
     Write-Host " 8. Exit" -ForegroundColor Red
