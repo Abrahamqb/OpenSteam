@@ -73,16 +73,6 @@ namespace OpenSteam.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Byte[].
         /// </summary>
-        internal static byte[] KernelLua {
-            get {
-                object obj = ResourceManager.GetObject("KernelLua", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Byte[].
-        /// </summary>
         internal static byte[] xinput1_4 {
             get {
                 object obj = ResourceManager.GetObject("xinput1_4", resourceCulture);

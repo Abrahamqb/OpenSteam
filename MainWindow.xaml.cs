@@ -88,7 +88,7 @@ namespace OpenSteam
             Plugins plugins = new Plugins();
             await plugins.ManagePluginsInstall();
             Thread.Sleep(1000);
-            await plugins.KernelLuaInstallerAsync(SteamUtils.GetSteamPath());
+            await plugins.LuaManagerInstallerAsync(SteamUtils.GetSteamPath());
         }
 
         private void ManualLua_Click(object sender, RoutedEventArgs e)

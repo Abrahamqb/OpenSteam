@@ -44,7 +44,7 @@ namespace OpenSteam.Service
             }
         }
 
-        public async Task KernelLuaInstallerAsync(string steamPath)
+        public async Task LuaManagerInstallerAsync(string steamPath)
         {
             if (string.IsNullOrEmpty(steamPath) || !Directory.Exists(steamPath))
             {
@@ -53,47 +53,56 @@ namespace OpenSteam.Service
             }
 
             var pluginsFolder = Path.Combine(steamPath, "plugins");
-            string tempZip = Path.Combine(Path.GetTempPath(), "KernelLua_Temp.zip");
-            string targetPluginDir = Path.Combine(pluginsFolder, "KernelLua");
+            string tempZip = Path.Combine(Path.GetTempPath(), "LuaManager_Temp.zip");
+            string targetPluginDir = Path.Combine(pluginsFolder, "LuaManager");
 
             try
             {
-                await Task.Run(() =>
+                using (HttpClient client = new HttpClient())
                 {
-                    if (!Directory.Exists(pluginsFolder)) Directory.CreateDirectory(pluginsFolder);
+                    client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+                    byte[] zipBytes = await client.GetByteArrayAsync("https://tu-url-real/LuaManager.zip");
+                    await File.WriteAllBytesAsync(tempZip, zipBytes);
+                }
 
-                    File.WriteAllBytes(tempZip, Properties.Resources.KernelLua);
-
+                string extractError = await Task.Run(() =>
+                {
+                    if (!Directory.Exists(pluginsFolder))
+                        Directory.CreateDirectory(pluginsFolder);
 
                     if (Directory.Exists(targetPluginDir))
-                    {
                         Directory.Delete(targetPluginDir, true);
-                    }
 
                     try
                     {
                         ZipFile.ExtractToDirectory(tempZip, pluginsFolder);
+                        return null;
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show("The KernelLua ZIP file is corrupt. Or it may already exist (Continue to try again)", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        Thread.Sleep(800);
-                        File.Delete(Path.Combine(pluginsFolder, "KernelLua"));
-                        return;
+                        return ex.Message;
                     }
-
                 });
 
+                if (extractError != null)
+                {
+                    MessageBox.Show($"The LuaManager ZIP file is corrupt or already exists.\n{extractError}",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-                NotificationWindow win = new NotificationWindow("¡KernelLua successfully installed!", 2);
+                NotificationWindow win = new NotificationWindow("¡LuaManager successfully installed!", 2);
                 win.Show();
-
-                if (File.Exists(tempZip)) File.Delete(tempZip);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Critical error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                if (File.Exists(tempZip)) File.Delete(tempZip);
+            }
         }
+
     }
 }
