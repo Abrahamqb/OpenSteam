@@ -53,6 +53,7 @@ namespace OpenSteam.Service
 
                     using (HttpClient client = new HttpClient())
                     {
+                        client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
                         try 
                         {
                             byte[] fileData = await client.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteamMore-Dev/releases/latest/download/inject.zip");
