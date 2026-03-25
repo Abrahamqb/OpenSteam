@@ -45,27 +45,72 @@ Start-Sleep -Seconds 2
 function PatchSteam {
     Clear-Host
     Write-Host " --- Patch Steam --- " -ForegroundColor Cyan
-    Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
-    Write-Host "Patching Steam, please wait a few seconds..." -ForegroundColor Gray
-    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/xinput1_4.dll" -OutFile "$steamPath\xinput1_4.dll"
-    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/dwmapi.dll" -OutFile "$steamPath\dwmapi.dll"
-    Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Resources/hid.dll" -OutFile "$steamPath\hid.dll"
-    Write-Host "Steam patched successfully!" -ForegroundColor Green
-    Write-Host "Press any key to continue..." -ForegroundColor Gray
+    if (-not (Test-Path $steamPath)) {
+        Write-Host " Steam path not found: $steamPath" -ForegroundColor Red
+        Write-Host " Press any key to continue..." -ForegroundColor Gray
+        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+        return
+    }
+
+    Write-Host " Steam found at: $steamPath" -ForegroundColor Blue
+    Write-Host " Downloading inject.zip, please wait..." -ForegroundColor Gray
+
+    $tempPath = Join-Path $steamPath "temp"
+    if (-not (Test-Path $tempPath)) { New-Item -ItemType Directory -Path $tempPath | Out-Null }
+    $zipPath = Join-Path $tempPath "inject.zip"
+
+    try {
+        $headers = @{ "User-Agent" = "OpenSteamManager" }
+        Invoke-WebRequest -Uri "https://github.com/Abrahamqb/OpenSteamMore-Dev/releases/latest/download/inject.zip" `
+            -OutFile $zipPath -Headers $headers -ErrorAction Stop
+
+        Write-Host " Extracting files to Steam folder..." -ForegroundColor Gray
+        Expand-Archive -Path $zipPath -DestinationPath $steamPath -Force
+
+        Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
+
+        Write-Host " Steam Patched!" -ForegroundColor Green
+    }
+    catch {
+        Write-Host " Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+    Write-Host " Press any key to continue..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
 }
 
 #2
 function DeletePatchSteam {
     Clear-Host
-    Write-Host " --- Delete Patch Steam --- " -ForegroundColor Cyan
-    Write-Host "Steam is installed in the default location: $steamPath." -ForegroundColor Blue
-    Write-Host "Deleting Path Steam, please wait a few seconds..." -ForegroundColor Red
-    if (Test-Path "$steamPath\xinput1_4.dll") { Remove-Item "$steamPath\xinput1_4.dll" -Recurse -Force }
-    if (Test-Path "$steamPath\dwmapi.dll") { Remove-Item "$steamPath\dwmapi.dll" -Recurse -Force }
-    if (Test-Path "$steamPath\hid.dll") { Remove-Item "$steamPath\hid.dll" -Recurse -Force }
-    Write-Host "Path Steam deleted successfully!" -ForegroundColor Green
-    Write-Host "Press any key to continue..." -ForegroundColor Gray
+    Write-Host " --- Unpatch Steam --- " -ForegroundColor Cyan
+
+    $jsonPath = Join-Path $steamPath "OpenSteamDel.json"
+    if (-not (Test-Path $jsonPath)) {
+        Write-Host " OpenSteamDel.json not found. Nothing to remove." -ForegroundColor Yellow
+        Write-Host " Press any key to continue..." -ForegroundColor Gray
+        $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+        return
+    }
+
+    try {
+        $jsonContent = Get-Content -Path $jsonPath -Raw
+        $filesToDelete = $jsonContent | ConvertFrom-Json
+
+        if ($null -ne $filesToDelete) {
+            foreach ($file in $filesToDelete) {
+                $filePath = Join-Path $steamPath $file
+                if (Test-Path $filePath) {
+                    Remove-Item $filePath -Force
+                    Write-Host " Deleted: $file" -ForegroundColor Gray
+                }
+            }
+        }
+
+        Write-Host " Unpatched Steam!" -ForegroundColor Green
+    }
+    catch {
+        Write-Host " Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+    Write-Host " Press any key to continue..." -ForegroundColor Gray
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
 }
 
