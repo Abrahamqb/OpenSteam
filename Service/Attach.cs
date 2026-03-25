@@ -27,10 +27,12 @@ namespace OpenSteam.Service
             {
                 if (Directory.Exists(path))
                 {
-                    byte[] File1 = Properties.Resources.dwmapi;
+                    byte[] File1 = Properties.Resources.xinput1_4;
                     File.WriteAllBytes(Path.Combine(path, "xinput1_4.dll"), File1);
                     byte[] File2 = Properties.Resources.hid;
                     File.WriteAllBytes(Path.Combine(path, "hid.dll"), File2);
+                    byte[] File3 = Properties.Resources.dwmapi;
+                    File.WriteAllBytes(Path.Combine(path, "dwmapi.dll"), File3);
                     NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
                     win.Show();
                 }
