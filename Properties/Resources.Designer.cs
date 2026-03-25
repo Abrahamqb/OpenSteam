@@ -59,35 +59,5 @@ namespace OpenSteam.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Byte[].
-        /// </summary>
-        internal static byte[] hid {
-            get {
-                object obj = ResourceManager.GetObject("hid", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Byte[].
-        /// </summary>
-        internal static byte[] xinput1_4 {
-            get {
-                object obj = ResourceManager.GetObject("xinput1_4", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Byte[].
-        /// </summary>
-        internal static byte[] dwmapi {
-            get {
-                object obj = ResourceManager.GetObject("dwmapi", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

@@ -26,7 +26,7 @@ namespace OpenSteam
             if (Properties.Settings.Default.AutoPatchLaunch)
             {
                 Attach attach = new Attach();
-                attach.PatchSteam(SteamUtils.GetSteamPath(), false);
+                _ = attach.PatchSteam(SteamUtils.GetSteamPath(), false);
                 State();
             }
 
@@ -46,7 +46,7 @@ namespace OpenSteam
             }
         }
 
-        private void patchButton_Click(object sender, RoutedEventArgs e)
+        private async void patchButton_Click(object sender, RoutedEventArgs e)
         {
             if (Properties.Settings.Default.CloseSteamBefore)
             {
@@ -72,14 +72,14 @@ namespace OpenSteam
                 }
             }
             Attach attach = new Attach();
-            attach.PatchSteam(SteamUtils.GetSteamPath(), false);
+            await attach.PatchSteam(SteamUtils.GetSteamPath(), false);
             State();
         }
 
-        private void DeletePatchButton_Click(object sender, RoutedEventArgs e)
+        private async void DeletePatchButton_Click(object sender, RoutedEventArgs e)
         {
             Attach attach = new Attach();
-            attach.PatchSteam(SteamUtils.GetSteamPath(), true);
+            await attach.PatchSteam(SteamUtils.GetSteamPath(), true);
             State();
         }
 
