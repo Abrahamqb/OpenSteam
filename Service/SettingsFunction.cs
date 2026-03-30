@@ -32,10 +32,10 @@ namespace OpenSteam.Service
             }
         }
 
-        public static void OpenDownloadFolder()
+        public static void OpenFolder() 
         {
             string steamPath = GetSteamPath();
-            string appsPath = Path.Combine(steamPath, "steamapps", "common");
+            string appsPath = Path.Combine(steamPath);
 
             if (Directory.Exists(appsPath))
                 Process.Start("explorer.exe", appsPath);

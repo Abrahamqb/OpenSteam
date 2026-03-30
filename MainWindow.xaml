@@ -209,7 +209,7 @@
                             <TextBlock Text="STEAM" Foreground="#007ACC" FontSize="12" FontWeight="Bold" Margin="0,10,0,10"/>
                             <Button Content="CLEAN STEAM CACHE" Style="{StaticResource DangerAction}" Height="25" Margin="0,0,0,10" FontSize="10" Click="CleanCache_Click"/>
                             <Button Content="Steam Config Backup" Style="{StaticResource DangerAction}" Height="25" Margin="0,0,0,10" FontSize="10" Click="ConfigBackup_Click"/>
-                            <Button Content="Direct Download Folder" Style="{StaticResource DangerAction}" Height="25" Margin="0,0,0,10" FontSize="10" Click="DownloadFolder_Click"/>
+                            <Button Content="Direct Steam Folder" Style="{StaticResource DangerAction}" Height="25" Margin="0,0,0,10" FontSize="10" Click="Folder_Click"/>
                             <CheckBox x:Name="DisableWebHelper_" Content="Disable Web Helper" Foreground="White" Margin="0,5" Checked="DisableWebHelper"/>
                             <Button Content="Back to Menu" Style="{StaticResource GhostButton}" Margin="0,20,0,0" Click="BackToMenu_Click"/>
                         </StackPanel>

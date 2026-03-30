@@ -119,66 +119,96 @@ function SearchGame {
     Clear-Host
     Write-Host " --- Search & Load Game Lua and Manifest --- " -ForegroundColor Cyan
 
+    $InternalAPI = "https://api.steamproof.net"
+
     $ID = Read-Host " Enter the Game ID (e.g., 12345)"
     if ([string]::IsNullOrWhiteSpace($ID)) { return }
+    $ID = $ID.Trim()
 
     $luaPathSteam = Join-Path $steamPath "config\stplug-in"
-    $manifestPathSteam = Join-Path $steamPath "config\depotcache"
+    $manifestPathSteam = Join-Path $steamPath "depotcache"
     $tempZip = Join-Path $env:TEMP "Lua_$ID.zip"
     $extractPath = Join-Path $env:TEMP "Extract_$ID"
 
     try {
-        Write-Host " Connecting to DataBase..." -ForegroundColor Gray
-        $fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/$ID"
-        Write-Host " Downloading Lua and Manifest..." -ForegroundColor Blue
-        Invoke-WebRequest -Uri $fullLink -OutFile $tempZip -Headers @{"User-Agent"="OpenSteam-Manager/1.0"} -ErrorAction Stop
+-
+        Write-Host " Connecting to ManifestHub" -ForegroundColor Gray
+        $githubUrl = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/$ID"
 
-        if (-not (Test-Path $luaPathSteam)) {
-            New-Item -ItemType Directory -Path $luaPathSteam -Force | Out-Null
-        }
-        if (-not (Test-Path $manifestPathSteam)) {
-            New-Item -ItemType Directory -Path $manifestPathSteam -Force | Out-Null
-        }
+        $wc = New-Object System.Net.WebClient
+        $wc.Headers.Add("User-Agent", "OpenSteam-Manager/1.0")
+        $wc.DownloadFile($githubUrl, $tempZip)
 
         if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
-        Write-Host " Extracting files..." -ForegroundColor Gray
         Expand-Archive -Path $tempZip -DestinationPath $extractPath -Force
 
-        $finalExtractedFolder = Get-ChildItem -Path $extractPath -Directory | Select-Object -First 1
-        if ($null -ne $finalExtractedFolder) {
-            $finalExtractedFolder = $finalExtractedFolder.FullName
-        } else {
-            $finalExtractedFolder = $extractPath
-        }
+        $extractedFolders = Get-ChildItem -Path $extractPath -Directory
+        $finalFolder = if ($extractedFolders) { $extractedFolders[0].FullName } else { $extractPath }
 
-        $manifestFiles = @(Get-ChildItem -Path $finalExtractedFolder -Filter "*.manifest" -Recurse)
-        $luaFiles = @(Get-ChildItem -Path $finalExtractedFolder -Filter "*.lua" -Recurse)
+        $luaFiles = Get-ChildItem -Path $finalFolder -Filter "*.lua" -Recurse
 
         if ($luaFiles.Count -gt 0) {
             $finalLuaFile = Join-Path $luaPathSteam "$ID.lua"
-            if (Test-Path $finalLuaFile) { Remove-Item $finalLuaFile -Force }
-            Move-Item -Path $luaFiles[0].FullName -Destination $finalLuaFile -Force
-            Write-Host " Script $ID.lua successfully loaded!" -ForegroundColor Green
+            if (-not (Test-Path $luaPathSteam)) { New-Item -ItemType Directory -Path $luaPathSteam -Force | Out-Null }
+
+            $content = Get-Content -Path $luaFiles[0].FullName -Raw -Encoding UTF8
+            $content = [regex]::Replace($content, "(?m)^\s*setManifestid\(.*?\);?\s*`r?`n?", "")
+            $content = [regex]::Replace($content, "(?s)\n-- SteamProof Manifests.*", "")
+            
+            [System.IO.File]::WriteAllText($finalLuaFile, $content.TrimEnd(), (New-Object System.Text.UTF8Encoding $false))
+            Write-Host " Base Script $ID.lua loaded." -ForegroundColor Green
         } else {
-            Write-Host " Error: No .lua file found inside the ZIP." -ForegroundColor Red
+            throw "No .lua file found in GitHub ZIP."
         }
 
-        if ($manifestFiles.Count -gt 0) {
-            foreach ($manifest in $manifestFiles) {
-                $destManifest = Join-Path $manifestPathSteam $manifest.Name
-                if (Test-Path $destManifest) { Remove-Item $destManifest -Force }
-                Move-Item -Path $manifest.FullName -Destination $destManifest -Force
+        Write-Host " Syncing with SteamProof API..." -ForegroundColor Blue
+
+        $wc.Encoding = [System.Text.Encoding]::UTF8
+
+        $urlInfo = "$InternalAPI/apps/depots?ids=$ID"
+        $urlDownload = "$InternalAPI/app/$ID/manifests/download"
+
+        $infoRaw = $wc.DownloadString($urlInfo)
+        $dlRaw = $wc.DownloadString($urlDownload)
+
+        $infoResp = $infoRaw | ConvertFrom-Json
+        $dlResp = $dlRaw | ConvertFrom-Json
+
+        if ($infoResp.apps.Count -gt 0) {
+            $appData = $infoResp.apps[0]
+            
+            Write-Host " Downloading physical manifests..." -ForegroundColor Gray
+            foreach ($m in $dlResp.manifests) {
+                $destManifest = Join-Path $manifestPathSteam "$($m.depotId)_$($m.manifestId).manifest"
+                if (-not (Test-Path $destManifest)) {
+                    $wc.DownloadFile($m.url, $destManifest)
+                }
             }
-            Write-Host " Manifest(s) successfully loaded!" -ForegroundColor Green
+
+            $ts = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm UTC")
+            $section = "`n`n-- SteamProof Manifests (updated $ts)"
+            foreach ($m in $dlResp.manifests) {
+                $dId = $m.depotId
+                $mSize = ($appData.depots | Where-Object { $_.depotId -eq $dId }).maxSize
+                if ($mSize) { $section += "`nsetManifestid($dId, `"$($m.manifestId)`", $mSize)" }
+                else { $section += "`nsetManifestid($dId, `"$($m.manifestId)`")" }
+            }
+
+            [System.IO.File]::AppendAllText($finalLuaFile, $section, (New-Object System.Text.UTF8Encoding $false))
+            Write-Host " All done! API manifests injected." -ForegroundColor Green
+
+            if (Get-Command RestartSteam -ErrorAction SilentlyContinue) { RestartSteam }
         }
     }
     catch {
-        Write-Host " Something went wrong: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host " Error: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host " Debug: Intento conectar a $InternalAPI" -ForegroundColor DarkGray
     }
     finally {
+        $wc.Dispose()
         if (Test-Path $tempZip) { Remove-Item $tempZip -Force }
         if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
-        Write-Host " Press any key to return to menu..." -ForegroundColor Gray
+        Write-Host "`n Press any key to return..." -ForegroundColor Gray
         $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
     }
 }
@@ -242,7 +272,7 @@ while ($true) {
     Write-Host $asciiArt -ForegroundColor Cyan
 
     Write-Host " =====================================================================" -ForegroundColor Gray
-    $patchStatus = if (Test-Path "$steamPath\hid.dll") { "[PATCHED]" } else { "[NOT PATCHED]" }
+    $patchStatus = if (Test-Path "$steamPath\xinput1_4.dll") { "[PATCHED]" } else { "[NOT PATCHED]" }
     $statusColor = if ($patchStatus -eq "[PATCHED]") { "Green" } else { "Red" }
     Write-Host " 1. Patch Steam $patchStatus" -ForegroundColor $statusColor
     Write-Host " 2. Remove Patch" -ForegroundColor Red

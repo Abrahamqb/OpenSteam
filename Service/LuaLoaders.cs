@@ -47,64 +47,6 @@ namespace OpenSteam.Service
             }
         }
 
-        //Old option explained in case the new one stops working
-        /*public async Task OnlineLoad(string ID, string path)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
-
-                string checkUrl = $"https://kernelos.org/games/download.php?gen=1&id={ID}";
-                string luaPathSteam = Path.Combine(path, "config", "stplug-in");
-                string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
-
-                try
-                {
-                    string content = await client.GetStringAsync(checkUrl);
-                    using JsonDocument doc = JsonDocument.Parse(content);
-
-                    string pathGameLua = doc.RootElement.GetProperty("url").GetString() ?? "";
-                    string fullLink = "https://kernelos.org" + pathGameLua;
-
-                    byte[] zipBytes = await client.GetByteArrayAsync(fullLink);
-                    await File.WriteAllBytesAsync(tempZip, zipBytes);
-
-                    await Task.Run(() =>
-                    {
-                        if (!Directory.Exists(luaPathSteam))
-                            Directory.CreateDirectory(luaPathSteam);
-
-                        string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
-
-                        string extractPath = Path.Combine(Path.GetTempPath(), "Extract_" + ID);
-                        if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
-
-                        ZipFile.ExtractToDirectory(tempZip, extractPath);
-
-                        string[] files = Directory.GetFiles(extractPath, "*.lua", SearchOption.AllDirectories);
-
-                        if (files.Length > 0)
-                        {
-                            if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
-                            File.Move(files[0], finalLuaFile);
-                        }
-
-                        Directory.Delete(extractPath, true);
-                    });
-
-                    NotificationWindow win = new NotificationWindow($"¡Script {ID}.lua successfully loaded!", 2);
-                    win.Show();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Something went wrong: {ex.Message}", "Error");
-                }
-                finally
-                {
-                    if (File.Exists(tempZip)) File.Delete(tempZip);
-                }
-            }
-        }*/
 
         public async Task OnlineLoad(string ID, string path)
         {
@@ -113,7 +55,7 @@ namespace OpenSteam.Service
                 client.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
 
                 string luaPathSteam = Path.Combine(path, "config", "stplug-in");
-                string ManifestPathSteam = Path.Combine(path, "config", "depotcache");
+                string ManifestPathSteam = Path.Combine(path, "depotcache");
                 string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
 
                 try
@@ -147,7 +89,7 @@ namespace OpenSteam.Service
                             if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
                             File.Move(files[0], finalLuaFile);
                         }
-                        if (Manifest.Length > 0)
+                        /*if (Manifest.Length > 0)
                         {
                             foreach (string manifest in Manifest)
                             {
@@ -155,12 +97,21 @@ namespace OpenSteam.Service
                                 if (File.Exists(destManifest)) File.Delete(destManifest);
                                 File.Move(manifest, destManifest);
                             }
-                        }
+                        }*/
                         Directory.Delete(extractPath, true);
                     });
 
-                    NotificationWindow win = new NotificationWindow($"¡Lua and Manifest successfully loaded!", 2);
+                    var result = await SteamUtils.FixManifests(path);
+
+                    NotificationWindow win = new NotificationWindow(
+                        $"✔ Lua & Manifest loaded",
+                        3
+                    );
                     win.Show();
+
+                    await Task.Delay(1000);
+
+                    SteamUtils.Reset();
                 }
                 catch (Exception ex)
                 {

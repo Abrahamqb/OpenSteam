@@ -32,6 +32,21 @@ namespace OpenSteam.Service
                                 }
                             }
                         }
+                        else
+                        {
+                            if(File.Exists(Path.Combine(path, "xinput1_4.dll")))
+                            {
+                                File.Delete(Path.Combine(path, "xinput1_4.dll"));
+                            }
+                            if(File.Exists(Path.Combine(path, "hid.dll")))
+                            {
+                                File.Delete(Path.Combine(path, "hid.dll"));
+                            }
+                            if(File.Exists(Path.Combine(path, "dwmapi.dll")))
+                            {
+                                File.Delete(Path.Combine(path, "dwmapi.dll"));
+                            }
+                        }
                     }
                     
                 }

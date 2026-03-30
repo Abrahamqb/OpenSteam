@@ -34,7 +34,7 @@ namespace OpenSteam
 
         public void State()
         {
-            if (File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")) && File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")))
+            if (File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "xinput1_4.dll")) || File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "hid.dll")) || File.Exists(Path.Combine(SteamUtils.GetSteamPath(), "dwmapi.dll")))
             {
                 ParcheEstado.Text = "Status: System Ready";
                 StatusDot.Fill = Brushes.LimeGreen;
@@ -177,9 +177,9 @@ namespace OpenSteam
             SettingsFunction.BackupSteamConfig();
         }
 
-        private void DownloadFolder_Click(object sender, RoutedEventArgs e)
+        private void Folder_Click(object sender, RoutedEventArgs e)
         {
-            SettingsFunction.OpenDownloadFolder();
+            SettingsFunction.OpenFolder();
         }
 
         private void DeleteAutoPatch(object sender, RoutedEventArgs e)

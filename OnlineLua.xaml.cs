@@ -49,24 +49,6 @@ namespace OpenSteam
             }
         }
 
-        /*private void PowerKernel_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                try
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "https://kernelos.org/",
-                        UseShellExecute = true
-                    });
-                }
-                catch
-                {
-
-                }
-            }
-        }*/
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
@@ -124,7 +106,6 @@ namespace OpenSteam
                     }
 
                 }
-
 
                 await luaLoaders.OnlineLoad(selectedGame.appid, steamPath);
 
