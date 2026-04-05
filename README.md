@@ -8,7 +8,7 @@ It also features a **manual installation section**, so you can install scripts t
 
 ![Status](https://img.shields.io/badge/status-release-green)
 ![License](https://img.shields.io/badge/license-GPL-green)
-![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 
 ---
 
@@ -34,6 +34,7 @@ It also features a **manual installation section**, so you can install scripts t
 
 - **C#**
 - **Native libraries and modified DLLs** (responsible for injection)
+- **SOLVED by** openlua.cloud **and** steamproof.net. Thank you for the solution to the Connection Error.
 
 ---
 
