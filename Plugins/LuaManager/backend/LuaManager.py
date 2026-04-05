@@ -1,4 +1,6 @@
 import os
+import json
+import time
 import re
 import json
 import zipfile
@@ -49,103 +51,144 @@ class LuaManager:
 
     def _download_backend(self, appid: int) -> None:
         """
-        Downloads the ManifestHub ZIP branch for `appid` from GitHub,
-        extracts the first .lua file into stplug-in/{appid}.lua,
-        and copies all .manifest files into config/depotcache/.
+        Genera stplug-in/{appid}.lua directamente desde la API de depots
+        y añade al final los setManifestid disponibles desde la API.
         """
         self._set_download_state(appid, {
-        'status': 'checking',
-        'currentApi': 'ManifestHub',
-        'bytesRead': 0,
-        'totalBytes': 0,
-        'endpoint': 'Github'
+            'status': 'checking',
+            'currentApi': 'SteamProof',
+            'bytesRead': 0,
+            'totalBytes': 0,
+            'endpoint': 'apps/depots'
         })
 
         api_base = "https://api.steamproof.net"
-        github_url = f'https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/{appid}'
-        
+        depot_keys_url = "https://gitlab.com/steamautocracks/manifesthub/-/raw/main/depotkeys.json"
+        cache_days = 7
+
         client = get_global_client()
         if not client:
             self._set_download_state(appid, {'status': 'failed', 'error': 'Failed to get HTTP client'})
             return
 
         try:
-            self._set_download_state(appid, {'status': 'downloading', 'endpoint': 'ManifestHub'})
-            status, headers, body = client.raw_get(github_url)
+            self._set_download_state(appid, {'status': 'downloading', 'endpoint': 'SteamProof Lua'})
 
-            if status != 200:
-                self._set_download_state(appid, {'status': 'failed', 'error': f'ManifestHub Lua not found (HTTP {status})'})
+            st_info, _, body_info = client.raw_get(f"{api_base}/apps/depots?ids={appid}")
+
+            if st_info != 200:
+                self._set_download_state(appid, {
+                    'status': 'failed',
+                    'error': f'SteamProof API error (HTTP {st_info})'
+                })
                 return
+
+            info_json = json.loads(body_info)
+            apps = info_json.get('apps') or []
+            if not apps:
+                self._set_download_state(appid, {
+                    'status': 'failed',
+                    'error': 'SteamProof API returned no apps'
+                })
+                return
+
+            app_data = apps[0]
+            depots = app_data.get('depots') or []
+
+            # Caché de depotkeys.json
+            cache_dir = get_stplug_in_path()
+            cache_file = os.path.join(cache_dir, 'depotkeys.json')
+
+            depot_keys = {}
+            should_refresh = True
+
+            if os.path.exists(cache_file):
+                mtime = os.path.getmtime(cache_file)
+                file_age_days = (time.time() - mtime) / (24 * 60 * 60)
+                if file_age_days < cache_days:
+                    try:
+                        with open(cache_file, 'r', encoding='utf-8') as f:
+                            depot_keys = json.load(f)
+                        should_refresh = False
+                        logger.debug(f'Using cached depotkeys.json ({file_age_days:.1f} days old)')
+                    except Exception as cache_error:
+                        logger.warning(f'Cache read failed: {cache_error}, refreshing')
+
+            if should_refresh:
+                logger.debug('Downloading fresh depotkeys.json')
+                keys_info, _, keys_body = client.raw_get(depot_keys_url)
+                if keys_info == 200:
+                    depot_keys = json.loads(keys_body)
+                    os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+                    with open(cache_file, 'w', encoding='utf-8') as f:
+                        json.dump(depot_keys, f)
+                else:
+                    logger.warning('Failed to refresh depotkeys.json, using empty dict')
 
             lua_dir = get_stplug_in_path()
-            depot_dir = _get_depotcache_path()
+            os.makedirs(lua_dir, exist_ok=True)
             dst_lua = os.path.join(lua_dir, f'{appid}.lua')
 
-            with zipfile.ZipFile(BytesIO(body), 'r') as z:
-                all_names = z.namelist()
-                lua_files = [n for n in all_names if n.lower().endswith('.lua')]
-                
-                if not lua_files:
-                    self._set_download_state(appid, {'status': 'failed', 'error': 'No .lua file in GitHub ZIP'})
-                    return
+            lines = [
+                f'-- Open Steam Lua Generator {getattr(sys.modules.get("__main__"), "__version__", "")}'.rstrip(),
+                f'addappid({appid})'
+            ]
 
-                raw_data = z.read(lua_files[0]).decode('utf-8', errors='ignore')
-                clean_content = re.sub(r'(?m)^\s*setManifestid\(.*?\);?\s*\n?', '', raw_data)
-                clean_content = re.sub(r'(?s)\n-- SteamProof Manifests.*', '', clean_content).strip()
-
-            self._set_download_state(appid, {'status': 'downloading', 'endpoint': 'SteamProof Fix'})
-            
-            st_info, _, body_info = client.raw_get(f"{api_base}/apps/depots?ids={appid}")
-            st_dl, _, body_dl = client.raw_get(f"{api_base}/app/{appid}/manifests/download")
-
-            if st_info != 200 or st_dl != 200:
-                self._set_download_state(appid, {'status': 'failed', 'error': 'SteamProof API error'})
-                return
-
-            app_data = json.loads(body_info)['apps'][0]
-            manifest_list = json.loads(body_dl)['manifests']
-            
-            installed_files = [dst_lua]
             manifest_lines = []
-            
-            for m in manifest_list:
-                did = m['depotId']
-                mid = m['manifestId']
-                m_url = m['url']
-                
-                dst_manifest = os.path.join(depot_dir, f"{did}_{mid}.manifest")
-                if not os.path.exists(dst_manifest):
-                    m_status, _, m_body = client.raw_get(m_url)
-                    if m_status == 200:
-                        with open(dst_manifest, 'wb') as f:
-                            f.write(m_body)
-                        installed_files.append(dst_manifest)
 
-                depot_info = next((d for d in app_data['depots'] if d['depotId'] == did), None)
-                max_size = depot_info.get('maxSize') if depot_info else None
-                
-                if max_size:
-                    manifest_lines.append(f'setManifestid({did}, "{mid}", {max_size})')
+            for depot in depots:
+                did = depot.get('depotId')
+                if did is None:
+                    continue
+
+                depot_key_str = str(did)
+                if depot_key_str in depot_keys and depot_keys[depot_key_str]:
+                    lines.append(f'addappid({did},1,"{depot_keys[depot_key_str]}")')
                 else:
-                    manifest_lines.append(f'setManifestid({did}, "{mid}")')
+                    lines.append(f'addappid({did},0,"")')
 
-            timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
-            final_lua_content = clean_content + f"\n\n-- SteamProof Manifests (updated {timestamp})\n"
-            final_lua_content += "\n".join(manifest_lines) + "\n"
+                manifests = depot.get('manifests') or {}
+                manifest_id = None
 
-            with open(dst_lua, 'w', encoding='utf-8') as f:
+                public_manifest = manifests.get('public')
+                if isinstance(public_manifest, dict):
+                    manifest_id = public_manifest.get('manifestId')
+
+                if not manifest_id:
+                    for _, branch_data in manifests.items():
+                        if isinstance(branch_data, dict) and branch_data.get('manifestId'):
+                            manifest_id = branch_data.get('manifestId')
+                            break
+
+                if manifest_id:
+                    max_size = depot.get('maxSize')
+                    if max_size:
+                        manifest_lines.append(f'setManifestid({did}, "{manifest_id}", {max_size})')
+                    else:
+                        manifest_lines.append(f'setManifestid({did}, "{manifest_id}")')
+
+            final_lua_content = "\n".join(lines)
+
+            if manifest_lines:
+                timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+                final_lua_content += f"\n\n-- SteamProof Manifests (updated {timestamp})\n"
+                final_lua_content += "\n".join(manifest_lines)
+
+            final_lua_content += "\n"
+
+            with open(dst_lua, 'w', encoding='utf-8', newline='\n') as f:
                 f.write(final_lua_content)
 
             self._set_download_state(appid, {
                 'status': 'done',
                 'success': True,
-                'api': 'ManifestHub',
-                'installedFiles': installed_files,
+                'api': 'SteamProof',
+                'installedFiles': [dst_lua],
                 'installedPath': dst_lua
             })
 
         except Exception as e:
-            logger.error(f'LuaManager: Hybrid install failed for {appid}: {e}')
+            logger.error(f'LuaManager: Lua generation failed for {appid}: {e}')
             self._set_download_state(appid, {'status': 'failed', 'error': str(e)})
 
     # ---------------------------------------------------------- public API

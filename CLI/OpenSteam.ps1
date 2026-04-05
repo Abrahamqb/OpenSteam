@@ -120,6 +120,8 @@ function SearchGame {
     Write-Host " --- Search & Load Game Lua and Manifest --- " -ForegroundColor Cyan
 
     $InternalAPI = "https://api.steamproof.net"
+    $DepotKeysUrl = "https://gitlab.com/steamautocracks/manifesthub/-/raw/main/depotkeys.json"
+    $CacheDays = 7
 
     $ID = Read-Host " Enter the Game ID (e.g., 12345)"
     if ([string]::IsNullOrWhiteSpace($ID)) { return }
@@ -127,43 +129,61 @@ function SearchGame {
 
     $luaPathSteam = Join-Path $steamPath "config\stplug-in"
     $manifestPathSteam = Join-Path $steamPath "depotcache"
-    $tempZip = Join-Path $env:TEMP "Lua_$ID.zip"
-    $extractPath = Join-Path $env:TEMP "Extract_$ID"
+    $cachePath = Join-Path $steamPath "cache"
+    $depotKeysCacheFile = Join-Path $cachePath "depotkeys.json"
 
     try {
--
-        Write-Host " Connecting to ManifestHub" -ForegroundColor Gray
-        $githubUrl = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/$ID"
-
-        $wc = New-Object System.Net.WebClient
-        $wc.Headers.Add("User-Agent", "OpenSteam-Manager/1.0")
-        $wc.DownloadFile($githubUrl, $tempZip)
-
-        if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
-        Expand-Archive -Path $tempZip -DestinationPath $extractPath -Force
-
-        $extractedFolders = Get-ChildItem -Path $extractPath -Directory
-        $finalFolder = if ($extractedFolders) { $extractedFolders[0].FullName } else { $extractPath }
-
-        $luaFiles = Get-ChildItem -Path $finalFolder -Filter "*.lua" -Recurse
-
-        if ($luaFiles.Count -gt 0) {
-            $finalLuaFile = Join-Path $luaPathSteam "$ID.lua"
-            if (-not (Test-Path $luaPathSteam)) { New-Item -ItemType Directory -Path $luaPathSteam -Force | Out-Null }
-
-            $content = Get-Content -Path $luaFiles[0].FullName -Raw -Encoding UTF8
-            $content = [regex]::Replace($content, "(?m)^\s*setManifestid\(.*?\);?\s*`r?`n?", "")
-            $content = [regex]::Replace($content, "(?s)\n-- SteamProof Manifests.*", "")
-            
-            [System.IO.File]::WriteAllText($finalLuaFile, $content.TrimEnd(), (New-Object System.Text.UTF8Encoding $false))
-            Write-Host " Base Script $ID.lua loaded." -ForegroundColor Green
-        } else {
-            throw "No .lua file found in GitHub ZIP."
-        }
+        if (-not (Test-Path $luaPathSteam)) { New-Item -ItemType Directory -Path $luaPathSteam -Force | Out-Null }
+        if (-not (Test-Path $manifestPathSteam)) { New-Item -ItemType Directory -Path $manifestPathSteam -Force | Out-Null }
+        if (-not (Test-Path $cachePath)) { New-Item -ItemType Directory -Path $cachePath -Force | Out-Null }
 
         Write-Host " Syncing with SteamProof API..." -ForegroundColor Blue
 
+        $wc = New-Object System.Net.WebClient
+        $wc.Headers.Add("User-Agent", "OpenSteam-Manager/1.0")
         $wc.Encoding = [System.Text.Encoding]::UTF8
+
+        $depotKeys = @{}
+
+        $shouldRefreshCache = $true
+        if (Test-Path $depotKeysCacheFile) {
+            $lastWriteUtc = (Get-Item $depotKeysCacheFile).LastWriteTimeUtc
+            $isExpired = $lastWriteUtc -lt (Get-Date).ToUniversalTime().AddDays(-$CacheDays)
+
+            if (-not $isExpired) {
+                try {
+                    $cachedKeysRaw = Get-Content -Path $depotKeysCacheFile -Raw -Encoding UTF8
+                    $cachedKeysObj = $cachedKeysRaw | ConvertFrom-Json -AsHashtable
+                    if ($cachedKeysObj) {
+                        $depotKeys = $cachedKeysObj
+                        $shouldRefreshCache = $false
+                        Write-Host " Using cached depotkeys.json" -ForegroundColor Gray
+                    }
+                }
+                catch {
+                    $shouldRefreshCache = $true
+                }
+            }
+        }
+
+        if ($shouldRefreshCache) {
+            try {
+                Write-Host " Downloading fresh depotkeys.json..." -ForegroundColor Gray
+                $keysRaw = $wc.DownloadString($DepotKeysUrl)
+                [System.IO.File]::WriteAllText($depotKeysCacheFile, $keysRaw, (New-Object System.Text.UTF8Encoding $false))
+                $depotKeys = $keysRaw | ConvertFrom-Json -AsHashtable
+            }
+            catch {
+                if (Test-Path $depotKeysCacheFile) {
+                    Write-Host " Warning: failed to refresh depotkeys.json, using old cache." -ForegroundColor Yellow
+                    $cachedKeysRaw = Get-Content -Path $depotKeysCacheFile -Raw -Encoding UTF8
+                    $depotKeys = $cachedKeysRaw | ConvertFrom-Json -AsHashtable
+                }
+                else {
+                    throw "No se pudo descargar depotkeys.json y no existe caché local."
+                }
+            }
+        }
 
         $urlInfo = "$InternalAPI/apps/depots?ids=$ID"
         $urlDownload = "$InternalAPI/app/$ID/manifests/download"
@@ -174,40 +194,70 @@ function SearchGame {
         $infoResp = $infoRaw | ConvertFrom-Json
         $dlResp = $dlRaw | ConvertFrom-Json
 
-        if ($infoResp.apps.Count -gt 0) {
-            $appData = $infoResp.apps[0]
-            
-            Write-Host " Downloading physical manifests..." -ForegroundColor Gray
-            foreach ($m in $dlResp.manifests) {
-                $destManifest = Join-Path $manifestPathSteam "$($m.depotId)_$($m.manifestId).manifest"
-                if (-not (Test-Path $destManifest)) {
-                    $wc.DownloadFile($m.url, $destManifest)
-                }
-            }
-
-            $ts = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm UTC")
-            $section = "`n`n-- SteamProof Manifests (updated $ts)"
-            foreach ($m in $dlResp.manifests) {
-                $dId = $m.depotId
-                $mSize = ($appData.depots | Where-Object { $_.depotId -eq $dId }).maxSize
-                if ($mSize) { $section += "`nsetManifestid($dId, `"$($m.manifestId)`", $mSize)" }
-                else { $section += "`nsetManifestid($dId, `"$($m.manifestId)`")" }
-            }
-
-            [System.IO.File]::AppendAllText($finalLuaFile, $section, (New-Object System.Text.UTF8Encoding $false))
-            Write-Host " All done! API manifests injected." -ForegroundColor Green
-
-            if (Get-Command RestartSteam -ErrorAction SilentlyContinue) { RestartSteam }
+        if ($infoResp.apps.Count -eq 0) {
+            throw "La API no devolvió apps."
         }
+
+        $appData = $infoResp.apps[0]
+        $finalLuaFile = Join-Path $luaPathSteam "$ID.lua"
+
+        $sb = New-Object System.Text.StringBuilder
+        [void]$sb.AppendLine("-- Open Steam Lua Generator")
+        [void]$sb.AppendLine("addappid($ID)")
+
+        foreach ($depot in $appData.depots) {
+            $dId = [string]$depot.depotId
+
+            if ($depotKeys.ContainsKey($dId) -and -not [string]::IsNullOrWhiteSpace($depotKeys[$dId])) {
+                [void]$sb.AppendLine("addappid($dId,1,`"$($depotKeys[$dId])`")")
+            }
+            else {
+                [void]$sb.AppendLine("addappid($dId,0,`"`")")
+            }
+        }
+
+        [System.IO.File]::WriteAllText($finalLuaFile, $sb.ToString(), (New-Object System.Text.UTF8Encoding $false))
+        Write-Host " Base Lua written: $finalLuaFile" -ForegroundColor Green
+
+        Write-Host " Downloading physical manifests..." -ForegroundColor Gray
+        foreach ($m in $dlResp.manifests) {
+            $destManifest = Join-Path $manifestPathSteam "$($m.depotId)_$($m.manifestId).manifest"
+            if (-not (Test-Path $destManifest)) {
+                $wc.DownloadFile($m.url, $destManifest)
+            }
+        }
+
+        $ts = (Get-Date).ToUniversalTime().ToString("yyyy-MM-dd HH:mm UTC")
+        $section = "`r`n`r`n-- SteamProof Manifests (updated $ts)"
+
+        foreach ($m in $dlResp.manifests) {
+            $dId = $m.depotId
+            $dInfo = $appData.depots | Where-Object { $_.depotId -eq $dId } | Select-Object -First 1
+            $mSize = $null
+
+            if ($dInfo -and $dInfo.PSObject.Properties.Name -contains "maxSize") {
+                $mSize = $dInfo.maxSize
+            }
+
+            if ($mSize) {
+                $section += "`r`nsetManifestid($dId, `"$($m.manifestId)`", $mSize)"
+            }
+            else {
+                $section += "`r`nsetManifestid($dId, `"$($m.manifestId)`")"
+            }
+        }
+
+        [System.IO.File]::AppendAllText($finalLuaFile, $section, (New-Object System.Text.UTF8Encoding $false))
+        Write-Host " All done! API manifests injected." -ForegroundColor Green
+
+        if (Get-Command RestartSteam -ErrorAction SilentlyContinue) { RestartSteam }
     }
     catch {
         Write-Host " Error: $($_.Exception.Message)" -ForegroundColor Red
         Write-Host " Debug: Intento conectar a $InternalAPI" -ForegroundColor DarkGray
     }
     finally {
-        $wc.Dispose()
-        if (Test-Path $tempZip) { Remove-Item $tempZip -Force }
-        if (Test-Path $extractPath) { Remove-Item $extractPath -Recurse -Force }
+        if ($wc) { $wc.Dispose() }
         Write-Host "`n Press any key to return..." -ForegroundColor Gray
         $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
     }
