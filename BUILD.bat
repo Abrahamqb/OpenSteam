@@ -19,8 +19,8 @@ dotnet restore %SOLUTION_NAME%
 :: -c Release: Optimiza el código
 :: -o %OUTPUT_DIR%: Guarda el resultado en la carpeta especificada
 echo [+] Compilando proyecto en modo Release...
-dotnet build %SOLUTION_NAME% -c Release --no-restore
-:: dotnet publish %SOLUTION_NAME% -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+:: dotnet build %SOLUTION_NAME% -c Release --no-restore
+dotnet publish %SOLUTION_NAME% -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 
 if %errorlevel% neq 0 (
     echo.

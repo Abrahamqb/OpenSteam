@@ -108,6 +108,15 @@ class HTTPClient:
         headers = self._build_headers()
         return client.stream('GET', url, headers=headers, **kwargs)
 
+    def close(self) -> None:
+        if self._client is not None:
+            try:
+                self._client.close()
+            except Exception as e:
+                logger.warn(f'HTTPClient: error while closing client: {e}')
+            finally:
+                self._client = None
+
     def post(self, url: str, data: Optional[Dict[str, Any]] = None, auth_token: Optional[str] = None) -> Dict[str, Any]:
         try:
             client = self._ensure_client()

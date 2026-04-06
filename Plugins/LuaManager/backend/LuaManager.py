@@ -1,8 +1,8 @@
 import os
+import traceback
 import json
 import time
 import re
-import json
 import zipfile
 import threading
 from io import BytesIO
@@ -73,8 +73,10 @@ class LuaManager:
 
         try:
             self._set_download_state(appid, {'status': 'downloading', 'endpoint': 'SteamProof Lua'})
+            logger.log(f'LuaManager: Requesting SteamProof API for appid {appid}')
 
             st_info, _, body_info = client.raw_get(f"{api_base}/apps/depots?ids={appid}")
+            logger.log(f'LuaManager: SteamProof response HTTP {st_info}')
 
             if st_info != 200:
                 self._set_download_state(appid, {
@@ -110,27 +112,29 @@ class LuaManager:
                         with open(cache_file, 'r', encoding='utf-8') as f:
                             depot_keys = json.load(f)
                         should_refresh = False
-                        logger.debug(f'Using cached depotkeys.json ({file_age_days:.1f} days old)')
+                        logger.log(f'Using cached depotkeys.json ({file_age_days:.1f} days old)')
                     except Exception as cache_error:
-                        logger.warning(f'Cache read failed: {cache_error}, refreshing')
+                        logger.warn(f'Cache read failed: {cache_error}, refreshing')
 
             if should_refresh:
-                logger.debug('Downloading fresh depotkeys.json')
+                logger.log('Downloading fresh depotkeys.json')
                 keys_info, _, keys_body = client.raw_get(depot_keys_url)
                 if keys_info == 200:
                     depot_keys = json.loads(keys_body)
-                    os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+                    parent = os.path.dirname(cache_file)
+                    if parent:
+                        os.makedirs(parent, exist_ok=True)
                     with open(cache_file, 'w', encoding='utf-8') as f:
                         json.dump(depot_keys, f)
                 else:
-                    logger.warning('Failed to refresh depotkeys.json, using empty dict')
+                    logger.warn('Failed to refresh depotkeys.json, using empty dict')
 
             lua_dir = get_stplug_in_path()
             os.makedirs(lua_dir, exist_ok=True)
             dst_lua = os.path.join(lua_dir, f'{appid}.lua')
 
             lines = [
-                f'-- Open Steam Lua Generator {getattr(sys.modules.get("__main__"), "__version__", "")}'.rstrip(),
+                '-- Open Steam Lua Generator',
                 f'addappid({appid})'
             ]
 
@@ -188,7 +192,8 @@ class LuaManager:
             })
 
         except Exception as e:
-            logger.error(f'LuaManager: Lua generation failed for {appid}: {e}')
+            tb = traceback.format_exc()
+            logger.error(f'LuaManager: Lua generation failed for {appid}: {e}\n{tb}')
             self._set_download_state(appid, {'status': 'failed', 'error': str(e)})
 
     # ---------------------------------------------------------- public API
