@@ -65,9 +65,8 @@ Openlua.cloud or fares.top and load it manually.
 **Lua Store (official, free):** Enter the Steam game ID (find it on SteamDB) and click
 the button. The game will be added to your account instantly.
 
-**Millennium + KernelLua (recommended):** Install Millennium — OpenSteam automates this —
+**Millennium + LuaManager (recommended):** Install Millennium — OpenSteam automates this —
 then activate the plugin to add games natively from Steam.
-Tutorial by the plugin creator: https://www.youtube.com/watch?v=zE3iYCI5QNk
 
 > **Important:** After patching, adding, or removing a game, you must restart Steam for
 > the changes to take effect. You can restart manually or use the designated button in the app.
