@@ -63,43 +63,86 @@ namespace OpenSteam.Service
         }
 
         private const string JsonUrl = "https://raw.githubusercontent.com/SteamTools-Team/GameList/refs/heads/main/games.json";
+        private static readonly string CacheDirectory = Path.Combine(Path.GetTempPath(), "OpenSteamData");
+        private static readonly string CacheFilePath = Path.Combine(CacheDirectory, "games.json");
         public static async Task<List<Game>> DownloadGameListAsync()
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                try
+                if (File.Exists(CacheFilePath))
+                {
+                    DateTime lastWriteTime = File.GetLastWriteTime(CacheFilePath);
+                    if (lastWriteTime.Date == DateTime.Today)
+                    {
+                        string localJson = await File.ReadAllTextAsync(CacheFilePath);
+                        return DeserializeGames(localJson);
+                    }
+                }
+
+                using (HttpClient client = new HttpClient())
                 {
                     string jsonContent = await client.GetStringAsync(JsonUrl);
 
-                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    return JsonSerializer.Deserialize<List<Game>>(jsonContent, options);
-                }
-                catch (Exception ex)
-                {
-                    return new List<Game>();
+                    if (!Directory.Exists(CacheDirectory))
+                        Directory.CreateDirectory(CacheDirectory);
+
+                    await File.WriteAllTextAsync(CacheFilePath, jsonContent);
+
+                    return DeserializeGames(jsonContent);
                 }
             }
+            catch (Exception ex)
+            {
+
+                if (File.Exists(CacheFilePath))
+                {
+                    string oldJson = await File.ReadAllTextAsync(CacheFilePath);
+                    return DeserializeGames(oldJson);
+                }
+
+                return new List<Game>();
+            }
+        }
+
+
+        private static List<Game> DeserializeGames(string json)
+        {
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            return JsonSerializer.Deserialize<List<Game>>(json, options) ?? new List<Game>();
         }
 
         public static List<Game> GetFilteredGames(string searchInput, List<Game> fullGameList)
         {
-            if (string.IsNullOrWhiteSpace(searchInput) || fullGameList == null)
+            if (fullGameList == null || fullGameList.Count == 0)
                 return new List<Game>();
 
+            if (string.IsNullOrWhiteSpace(searchInput))
+                return fullGameList; 
             string cleanInput = searchInput.Trim();
-            bool isNumeric = cleanInput.All(char.IsDigit);
+
+            bool isNumeric = true;
+            foreach (char c in cleanInput)
+            {
+                if (!char.IsDigit(c)) { isNumeric = false; break; }
+            }
+
+            var query = fullGameList.AsEnumerable();
 
             if (isNumeric)
             {
-                return fullGameList.Where(g => g.appid == cleanInput).ToList();
+
+                return query.Where(g => g.appid == cleanInput).ToList();
             }
             else
             {
-                return fullGameList.Where(g => g.name != null &&
-                       g.name.Contains(cleanInput, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                return query.Where(g =>
+                    g.name != null &&
+                    g.name.Contains(cleanInput, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
         }
-        
+
         public static async Task<(int updated, int luaUpdated)> FixManifests(string steamPath)
         {
             const string API = "https://api.steamproof.net";
