@@ -1,13 +1,11 @@
-﻿using OpenSteam.Service;
+using OpenSteam.Service;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace OpenSteam
 {
-    /// <summary>
-    /// </summary>
-    public partial class OnlineLua : Window
+    public partial class OnlineLua : UserControl
     {
         public OnlineLua()
         {
@@ -41,20 +39,6 @@ namespace OpenSteam
             }
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                this.DragMove();
-            }
-        }
-
-
-        private void Back_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
             string userInput = SearchBox.Text;
@@ -72,7 +56,6 @@ namespace OpenSteam
 
             try
             {
-
                 var results = await Task.Run(() => SteamUtils.GetFilteredGames(userInput, CachedList));
 
                 if (results == null || !results.Any())
@@ -82,7 +65,6 @@ namespace OpenSteam
                 }
 
                 Game selectedGame = results.First();
-
 
                 if (selectedGame.nsfw && !Properties.Settings.Default.DisableNFSWAlert)
                 {
@@ -98,7 +80,6 @@ namespace OpenSteam
                     if (res == MessageBoxResult.No) return;
                 }
 
-
                 LuaLoaders luaLoaders = new LuaLoaders();
                 string steamPath = SteamUtils.GetSteamPath();
                 await luaLoaders.OnlineLoad(selectedGame.appid, steamPath);
@@ -109,7 +90,6 @@ namespace OpenSteam
             }
             finally
             {
-
                 ButtonSearch.IsEnabled = true;
                 ButtonSearch.Opacity = 1.0;
                 ButtonText.Visibility = Visibility.Visible;
@@ -125,26 +105,11 @@ namespace OpenSteam
             {
                 try
                 {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "https://github.com/atom0s/Steamless/releases/tag/v3.1.0.5",
-                        UseShellExecute = true
-                    });
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "https://www.youtube.com/watch?v=Izcsmc6ZAxQ",
-                        UseShellExecute = true
-                    });
+                    Process.Start(new ProcessStartInfo { FileName = "https://github.com/atom0s/Steamless/releases/tag/v3.1.0.5", UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo { FileName = "https://www.youtube.com/watch?v=Izcsmc6ZAxQ", UseShellExecute = true });
                 }
-                catch
-                {
-
-                }
+                catch { }
             }
-            else
-                return;
         }
-
-        private void ExitButton_Click(object sender, RoutedEventArgs e) { this.Close(); }
     }
 }

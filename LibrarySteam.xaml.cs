@@ -1,28 +1,21 @@
-﻿using OpenSteam.Service;
+using OpenSteam.Service;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace OpenSteam
 {
-    public partial class LibrarySteam : Window
+    public partial class LibrarySteam : UserControl
     {
         private string luaPath;
         private string steamPath;
-        private static readonly HttpClient client = new HttpClient();
+        private List<Game> fullGameList = new List<Game>();
 
         public LibrarySteam()
         {
             InitializeComponent();
-
-            if (!client.DefaultRequestHeaders.Contains("User-Agent"))
-            {
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-            }
 
             steamPath = SteamUtils.GetSteamPath();
 
@@ -33,7 +26,7 @@ namespace OpenSteam
                 {
                     Directory.CreateDirectory(luaPath);
                 }
-                _ = RefreshLuaList();
+                _ = LoadData();
             }
             else
             {
@@ -41,8 +34,20 @@ namespace OpenSteam
             }
         }
 
-        private async Task<string> GetGameName(string appId)
+        private async Task LoadData()
         {
+            try
+            {
+                fullGameList = await SteamUtils.DownloadGameListAsync();
+            }
+            catch { /* Fallback to empty list if network/cache fails */ }
+
+            await RefreshLuaList();
+        }
+
+        private string GetGameNameLocal(string appId)
+        {
+            // 1. Try local ACF (Native)
             try
             {
                 string acfPath = Path.Combine(steamPath, "steamapps", $"appmanifest_{appId}.acf");
@@ -50,35 +55,19 @@ namespace OpenSteam
                 {
                     string content = File.ReadAllText(acfPath);
                     var match = Regex.Match(content, "\"name\"\\s+\"([^\"]+)\"");
-                    if (match.Success) return match.Groups[1].Value + " (Not deleting can be native!)";
+                    if (match.Success) return match.Groups[1].Value + " (Good)";
                 }
             }
             catch { }
 
-            try
+            // 2. Try JSON Cache (Fast)
+            var game = fullGameList.FirstOrDefault(g => g.appid == appId);
+            if (game != null)
             {
-                string url = $"https://store.steampowered.com/app/{appId}/?l=spanish";
-                string html = await client.GetStringAsync(url);
-
-                var titleMatch = Regex.Match(html, "<title>(.*?) en Steam</title>", RegexOptions.IgnoreCase);
-
-                if (titleMatch.Success)
-                {
-                    string cleanName = titleMatch.Groups[1].Value;
-                    if (cleanName.Contains(" en "))
-                    {
-                        cleanName = cleanName.Split(new[] { " en " }, StringSplitOptions.None).Last();
-                    }
-
-                    return cleanName.Trim() + " (OpenSteam)";
-                }
-            }
-            catch
-            {
-                return $"Connection error: {appId}.lua";
+                return game.name + " (Very Good)";
             }
 
-            return appId;
+            return appId + ".lua";
         }
 
         private async Task RefreshLuaList()
@@ -91,22 +80,14 @@ namespace OpenSteam
             foreach (string file in files)
             {
                 string id = Path.GetFileNameWithoutExtension(file);
+                string realName = GetGameNameLocal(id);
 
                 ListBoxItem item = new ListBoxItem
                 {
-                    Content = $"loading data ({id})...",
+                    Content = realName,
                     Tag = Path.GetFileName(file)
                 };
                 LuaListBox.Items.Add(item);
-
-                _ = Task.Run(async () =>
-                {
-                    string realName = await GetGameName(id);
-                    Dispatcher.Invoke(() =>
-                    {
-                        item.Content = $"{realName}";
-                    });
-                });
             }
         }
 
@@ -114,15 +95,29 @@ namespace OpenSteam
         {
             if (LuaListBox.SelectedItems.Count == 0) return;
 
-            if (MessageBox.Show("Delete selected files?", "Delete", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Delete selected files?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
+                var itemsToRemove = new List<ListBoxItem>();
                 foreach (ListBoxItem item in LuaListBox.SelectedItems)
                 {
-                    string fileName = item.Tag.ToString();
-                    string path = Path.Combine(luaPath, fileName);
-                    if (File.Exists(path)) File.Delete(path);
+                    itemsToRemove.Add(item);
+                    try
+                    {
+                        string fileName = item.Tag.ToString();
+                        string path = Path.Combine(luaPath, fileName);
+                        if (File.Exists(path)) File.Delete(path);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error deleting file: {ex.Message}");
+                    }
                 }
-                _ = RefreshLuaList();
+
+                // Remove from UI without refreshing everything
+                foreach (var item in itemsToRemove)
+                {
+                    LuaListBox.Items.Remove(item);
+                }
             }
         }
 
@@ -132,20 +127,12 @@ namespace OpenSteam
             foreach (ListBoxItem item in LuaListBox.SelectedItems)
             {
                 var appid = item.Tag.ToString().Replace(".lua", "");
-                Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{appid}") { UseShellExecute = true });
+                try
+                {
+                    Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{appid}") { UseShellExecute = true });
+                }
+                catch { }
             }
-        }
-
-        private void Back_Click(object sender, RoutedEventArgs e) => this.Close();
-
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left) this.DragMove();
-        }
-
-        private void ExitButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
     }
 }

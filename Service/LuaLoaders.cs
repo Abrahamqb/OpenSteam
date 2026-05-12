@@ -1,12 +1,9 @@
 ﻿using Microsoft.Win32;
 using System.IO;
-using System.IO.Compression;
 using System.Net.Http;
-using System.Windows;
-using System;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace OpenSteam.Service
 {
@@ -154,7 +151,7 @@ namespace OpenSteam.Service
 
             return sb.ToString();
         }
-        
+
         public async Task OnlineLoad(string ID, string path)
         {
             // Use the instance HttpClient

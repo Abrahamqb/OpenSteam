@@ -1,9 +1,7 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace OpenSteam.Service
 {
@@ -22,13 +20,13 @@ namespace OpenSteam.Service
                     {
                         string JsonContent = File.ReadAllText(JsonPath);
                         string[] FilesToDelete = JsonSerializer.Deserialize<string[]>(JsonContent);
-                        
-                        if(FilesToDelete != null)
+
+                        if (FilesToDelete != null)
                         {
-                            foreach(string file in FilesToDelete)
+                            foreach (string file in FilesToDelete)
                             {
                                 string filePath = Path.Combine(path, file);
-                                if(File.Exists(filePath))
+                                if (File.Exists(filePath))
                                 {
                                     File.Delete(filePath);
                                 }
@@ -36,21 +34,21 @@ namespace OpenSteam.Service
                         }
                         else
                         {
-                            if(File.Exists(Path.Combine(path, "xinput1_4.dll")))
+                            if (File.Exists(Path.Combine(path, "xinput1_4.dll")))
                             {
                                 File.Delete(Path.Combine(path, "xinput1_4.dll"));
                             }
-                            if(File.Exists(Path.Combine(path, "hid.dll")))
+                            if (File.Exists(Path.Combine(path, "hid.dll")))
                             {
                                 File.Delete(Path.Combine(path, "hid.dll"));
                             }
-                            if(File.Exists(Path.Combine(path, "dwmapi.dll")))
+                            if (File.Exists(Path.Combine(path, "dwmapi.dll")))
                             {
                                 File.Delete(Path.Combine(path, "dwmapi.dll"));
                             }
                         }
                     }
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -69,10 +67,10 @@ namespace OpenSteam.Service
                     string zipPath = Path.Combine(tempPath, "inject.zip");
 
                     _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-                    try 
+                    try
                     {
                         byte[] fileData = await _httpClient.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteamMore-Dev/releases/latest/download/inject.zip");
-                        
+
                         await File.WriteAllBytesAsync(zipPath, fileData);
 
                         ZipFile.ExtractToDirectory(zipPath, path, true);

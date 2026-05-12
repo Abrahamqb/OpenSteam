@@ -82,5 +82,17 @@ namespace OpenSteam.Properties {
                 this["DisableNFSWAlert"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool InitialMessage {
+            get {
+                return ((bool)(this["InitialMessage"]));
+            }
+            set {
+                this["InitialMessage"] = value;
+            }
+        }
     }
 }

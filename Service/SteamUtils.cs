@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace OpenSteam.Service
@@ -11,18 +11,19 @@ namespace OpenSteam.Service
     public static class SteamUtils
     {
         private static string _cachedSteamPath;
+        private static List<Game> _memoryGameList;
         private static readonly HttpClient _httpClient = new HttpClient();
 
         public static void Reset()
         {
             try
-            {             
+            {
                 Process[] processes = Process.GetProcessesByName("steam");
 
                 if (processes.Length > 0)
-                {                   
+                {
                     foreach (Process proceso in processes)
-                    {                       
+                    {
                         try
                         {
                             proceso.Kill();
@@ -34,14 +35,14 @@ namespace OpenSteam.Service
                 bool disableWeb = Properties.Settings.Default.DisableWebHelper;
 
                 if (disableWeb)
-                {                   
+                {
                     string steamPath = GetSteamPath();
                     string steamExe = Path.Combine(steamPath, "steam.exe");
 
                     Process.Start(steamExe, "-no-browser +open steam://open/minigameslist");
                 }
                 else
-                {                   
+                {
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "steam://flushconfig",
@@ -82,6 +83,8 @@ namespace OpenSteam.Service
         private static readonly string CacheFilePath = Path.Combine(CacheDirectory, "games.json");
         public static async Task<List<Game>> DownloadGameListAsync()
         {
+            if (_memoryGameList != null && _memoryGameList.Count > 0) return _memoryGameList;
+
             try
             {
                 if (File.Exists(CacheFilePath))
@@ -90,7 +93,8 @@ namespace OpenSteam.Service
                     if (lastWriteTime.Date == DateTime.Today)
                     {
                         string localJson = await File.ReadAllTextAsync(CacheFilePath);
-                        return DeserializeGames(localJson);
+                        _memoryGameList = DeserializeGames(localJson);
+                        return _memoryGameList;
                     }
                 }
 
@@ -101,7 +105,8 @@ namespace OpenSteam.Service
 
                 await File.WriteAllTextAsync(CacheFilePath, jsonContent);
 
-                return DeserializeGames(jsonContent);
+                _memoryGameList = DeserializeGames(jsonContent);
+                return _memoryGameList;
             }
             catch (Exception ex)
             {
@@ -109,7 +114,8 @@ namespace OpenSteam.Service
                 if (File.Exists(CacheFilePath))
                 {
                     string oldJson = await File.ReadAllTextAsync(CacheFilePath);
-                    return DeserializeGames(oldJson);
+                    _memoryGameList = DeserializeGames(oldJson);
+                    return _memoryGameList;
                 }
 
                 return new List<Game>();
@@ -129,7 +135,7 @@ namespace OpenSteam.Service
                 return new List<Game>();
 
             if (string.IsNullOrWhiteSpace(searchInput))
-                return fullGameList; 
+                return fullGameList;
             string cleanInput = searchInput.Trim();
 
             bool isNumeric = true;
@@ -183,7 +189,7 @@ namespace OpenSteam.Service
 
                 luaData[appId] = (file, content);
 
-                bool missing = depotIds.Any(d => 
+                bool missing = depotIds.Any(d =>
                     !Directory.GetFiles(depotCache, $"{d}_*.manifest").Any()
                 );
 
@@ -210,19 +216,19 @@ namespace OpenSteam.Service
                 var appInfo = luaData[appId];
                 var manifestEntries = new List<string>();
 
-                try 
+                try
                 {
                     string dlInfoJson = await _httpClient.GetStringAsync($"{API}/app/{appId}/manifests/download");
                     using var dlDoc = JsonDocument.Parse(dlInfoJson);
-                    
+
                     if (dlDoc.RootElement.TryGetProperty("manifests", out var manifestList))
                     {
                         foreach (var m in manifestList.EnumerateArray())
                         {
                             string dId = m.GetProperty("depotId").ToString();
                             string mId = m.GetProperty("manifestId").ToString();
-                            string dlUrl = m.GetProperty("url").ToString(); 
-                            
+                            string dlUrl = m.GetProperty("url").ToString();
+
                             string fileName = $"{dId}_{mId}.manifest";
                             string fullPath = Path.Combine(depotCache, fileName);
 
@@ -235,17 +241,17 @@ namespace OpenSteam.Service
                         }
                     }
                 }
-                catch {  }
+                catch { }
 
                 var depotsFromApi = app.GetProperty("depots").EnumerateArray();
                 foreach (var depot in depotsFromApi)
                 {
                     string dId = depot.GetProperty("depotId").ToString();
-                    if (depot.TryGetProperty("manifests", out var manifests) && 
+                    if (depot.TryGetProperty("manifests", out var manifests) &&
                         manifests.TryGetProperty("public", out var pub))
                     {
                         string mId = pub.GetProperty("manifestId").ToString();
-                        
+
                         if (depot.TryGetProperty("maxSize", out var sz) && sz.GetRawText() != "0")
                             manifestEntries.Add($"setManifestid({dId}, \"{mId}\", {sz})");
                         else
@@ -260,14 +266,14 @@ namespace OpenSteam.Service
                     cleanContent = Regex.Replace(cleanContent, @"\r?\n?setManifestid\([^\)]*\);?", "", RegexOptions.IgnoreCase);
 
                     cleanContent = Regex.Replace(cleanContent, @"(\r?\n-- SteamProof Manifests.*)", "", RegexOptions.Singleline);
-                    
+
                     cleanContent = cleanContent.TrimEnd();
 
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine(cleanContent);
                     sb.AppendLine();
                     sb.AppendLine($"-- SteamProof Manifests (updated {DateTime.UtcNow:yyyy-MM-dd HH:mm UTC})");
-                    
+
                     foreach (var entry in manifestEntries)
                         sb.AppendLine(entry);
 
