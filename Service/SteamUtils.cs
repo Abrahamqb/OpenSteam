@@ -10,16 +10,19 @@ namespace OpenSteam.Service
 
     public static class SteamUtils
     {
+        private static string _cachedSteamPath;
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         public static void Reset()
         {
             try
-            {
+            {             
                 Process[] processes = Process.GetProcessesByName("steam");
 
                 if (processes.Length > 0)
-                {
+                {                   
                     foreach (Process proceso in processes)
-                    {
+                    {                       
                         try
                         {
                             proceso.Kill();
@@ -31,14 +34,14 @@ namespace OpenSteam.Service
                 bool disableWeb = Properties.Settings.Default.DisableWebHelper;
 
                 if (disableWeb)
-                {
+                {                   
                     string steamPath = GetSteamPath();
                     string steamExe = Path.Combine(steamPath, "steam.exe");
 
                     Process.Start(steamExe, "-no-browser +open steam://open/minigameslist");
                 }
                 else
-                {
+                {                   
                     ProcessStartInfo psi = new ProcessStartInfo
                     {
                         FileName = "steam://flushconfig",
@@ -54,11 +57,23 @@ namespace OpenSteam.Service
         }
         public static string GetSteamPath()
         {
+            if (!string.IsNullOrEmpty(_cachedSteamPath))
+            {
+                return _cachedSteamPath;
+            }
+
             string registryPath = Microsoft.Win32.Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", null) as string;
             if (registryPath != null)
-                return registryPath.Replace("/", "\\");
+            {
+                _cachedSteamPath = registryPath.Replace("/", "\\");
+                return _cachedSteamPath;
+            }
             string defaultPath = @"C:\Program Files (x86)\Steam";
-            if (Directory.Exists(defaultPath)) return defaultPath;
+            if (Directory.Exists(defaultPath))
+            {
+                _cachedSteamPath = defaultPath;
+                return _cachedSteamPath;
+            }
             return null;
         }
 
@@ -79,17 +94,14 @@ namespace OpenSteam.Service
                     }
                 }
 
-                using (HttpClient client = new HttpClient())
-                {
-                    string jsonContent = await client.GetStringAsync(JsonUrl);
+                string jsonContent = await _httpClient.GetStringAsync(JsonUrl);
 
-                    if (!Directory.Exists(CacheDirectory))
-                        Directory.CreateDirectory(CacheDirectory);
+                if (!Directory.Exists(CacheDirectory))
+                    Directory.CreateDirectory(CacheDirectory);
 
-                    await File.WriteAllTextAsync(CacheFilePath, jsonContent);
+                await File.WriteAllTextAsync(CacheFilePath, jsonContent);
 
-                    return DeserializeGames(jsonContent);
-                }
+                return DeserializeGames(jsonContent);
             }
             catch (Exception ex)
             {
@@ -181,12 +193,11 @@ namespace OpenSteam.Service
 
             if (needsUpdateIds.Count == 0) return (0, 0);
 
-            using HttpClient client = new HttpClient();
             int totalManifestsDownloaded = 0;
             int luaFilesUpdated = 0;
 
             string idsQuery = string.Join(",", needsUpdateIds);
-            string jsonResponse = await client.GetStringAsync($"{API}/apps/depots?ids={idsQuery}");
+            string jsonResponse = await _httpClient.GetStringAsync($"{API}/apps/depots?ids={idsQuery}");
             using var doc = JsonDocument.Parse(jsonResponse);
 
             if (!doc.RootElement.TryGetProperty("apps", out var appsArray)) return (0, 0);
@@ -201,7 +212,7 @@ namespace OpenSteam.Service
 
                 try 
                 {
-                    string dlInfoJson = await client.GetStringAsync($"{API}/app/{appId}/manifests/download");
+                    string dlInfoJson = await _httpClient.GetStringAsync($"{API}/app/{appId}/manifests/download");
                     using var dlDoc = JsonDocument.Parse(dlInfoJson);
                     
                     if (dlDoc.RootElement.TryGetProperty("manifests", out var manifestList))
@@ -217,7 +228,7 @@ namespace OpenSteam.Service
 
                             if (!File.Exists(fullPath))
                             {
-                                byte[] data = await client.GetByteArrayAsync(dlUrl);
+                                byte[] data = await _httpClient.GetByteArrayAsync(dlUrl);
                                 await File.WriteAllBytesAsync(fullPath, data);
                                 totalManifestsDownloaded++;
                             }

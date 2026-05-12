@@ -81,15 +81,7 @@ namespace OpenSteam
                     return;
                 }
 
-                Game selectedGame;
-                if (results.Count > 1)
-                {
-                    selectedGame = results.First();
-                }
-                else
-                {
-                    selectedGame = results.First();
-                }
+                Game selectedGame = results.First();
 
 
                 if (selectedGame.nsfw && !Properties.Settings.Default.DisableNFSWAlert)

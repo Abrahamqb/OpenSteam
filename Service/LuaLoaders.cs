@@ -12,6 +12,9 @@ namespace OpenSteam.Service
 {
     public class LuaLoaders
     {
+        private static readonly HttpClient _staticHttpClient = new HttpClient(); // For static methods
+        private readonly HttpClient _instanceHttpClient = new HttpClient(); // For instance methods
+
         public void Load(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -53,10 +56,9 @@ namespace OpenSteam.Service
 
         public static async Task<string> SteamLuaGenerator(int appId, string path, int cacheDays = 7)
         {
-            using var http = new HttpClient();
-
+            // Use the static HttpClient instance
             string apiUrl = $"https://api.steamproof.net/apps/depots?ids={appId}";
-            string apiJson = await http.GetStringAsync(apiUrl);
+            string apiJson = await _staticHttpClient.GetStringAsync(apiUrl);
 
             string cacheDir = Path.Combine(path, "cache");
             Directory.CreateDirectory(cacheDir);
@@ -89,7 +91,7 @@ namespace OpenSteam.Service
 
             if (shouldRefresh)
             {
-                keysJson = await http.GetStringAsync(keysUrl);
+                keysJson = await _staticHttpClient.GetStringAsync(keysUrl);
                 await File.WriteAllTextAsync(cacheFile, keysJson, Encoding.UTF8);
             }
 
@@ -155,80 +157,78 @@ namespace OpenSteam.Service
         
         public async Task OnlineLoad(string ID, string path)
         {
-            using (HttpClient client = new HttpClient())
+            // Use the instance HttpClient
+            _instanceHttpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
+
+            string luaPathSteam = Path.Combine(path, "config", "stplug-in");
+            string ManifestPathSteam = Path.Combine(path, "depotcache");
+            string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
+
+            try
             {
-                client.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
+                int appid = int.Parse(ID);
+                var lua = await SteamLuaGenerator(appid, luaPathSteam);
+                /*string fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/" + ID;
+                byte[] zipBytes = await _instanceHttpClient.GetByteArrayAsync(fullLink);
+                await File.WriteAllBytesAsync(tempZip, zipBytes);
 
-                string luaPathSteam = Path.Combine(path, "config", "stplug-in");
-                string ManifestPathSteam = Path.Combine(path, "depotcache");
-                string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
-
-                try
+                await Task.Run(() =>
                 {
-                    int appid = int.Parse(ID);
-                    var lua = await SteamLuaGenerator(appid, luaPathSteam);
-                    /*string fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/" + ID;
-                    byte[] zipBytes = await client.GetByteArrayAsync(fullLink);
-                    await File.WriteAllBytesAsync(tempZip, zipBytes);
+                    if (!Directory.Exists(luaPathSteam))
+                        Directory.CreateDirectory(luaPathSteam);
 
-                    await Task.Run(() =>
+                    if (!Directory.Exists(ManifestPathSteam))
+                        Directory.CreateDirectory(ManifestPathSteam);
+
+                    string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
+
+                    string extractPath = Path.Combine(Path.GetTempPath(), "Extract_" + ID);
+                    if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
+
+                    ZipFile.ExtractToDirectory(tempZip, extractPath);
+
+                    string FinalExtractedFolder = Directory.GetDirectories(extractPath).FirstOrDefault() ?? extractPath;
+
+                    string[] Manifest = Directory.GetFiles(FinalExtractedFolder, "*.manifest", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(FinalExtractedFolder, "*.lua", SearchOption.AllDirectories);
+
+                    if (files.Length > 0)
                     {
-                        if (!Directory.Exists(luaPathSteam))
-                            Directory.CreateDirectory(luaPathSteam);
-
-                        if (!Directory.Exists(ManifestPathSteam))
-                            Directory.CreateDirectory(ManifestPathSteam);
-
-                        string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
-
-                        string extractPath = Path.Combine(Path.GetTempPath(), "Extract_" + ID);
-                        if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
-
-                        ZipFile.ExtractToDirectory(tempZip, extractPath);
-
-                        string FinalExtractedFolder = Directory.GetDirectories(extractPath).FirstOrDefault() ?? extractPath;
-
-                        string[] Manifest = Directory.GetFiles(FinalExtractedFolder, "*.manifest", SearchOption.AllDirectories);
-                        string[] files = Directory.GetFiles(FinalExtractedFolder, "*.lua", SearchOption.AllDirectories);
-
-                        if (files.Length > 0)
+                        if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
+                        File.Move(files[0], finalLuaFile);
+                    }
+                    if (Manifest.Length > 0)
+                    {
+                        foreach (string manifest in Manifest)
                         {
-                            if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
-                            File.Move(files[0], finalLuaFile);
+                            string destManifest = Path.Combine(ManifestPathSteam, Path.GetFileName(manifest));
+                            if (File.Exists(destManifest)) File.Delete(destManifest);
+                            File.Move(manifest, destManifest);
                         }
-                        if (Manifest.Length > 0)
-                        {
-                            foreach (string manifest in Manifest)
-                            {
-                                string destManifest = Path.Combine(ManifestPathSteam, Path.GetFileName(manifest));
-                                if (File.Exists(destManifest)) File.Delete(destManifest);
-                                File.Move(manifest, destManifest);
-                            }
-                        }
-                        Directory.Delete(extractPath, true);
-                    });*/
+                    }
+                    Directory.Delete(extractPath, true);
+                });*/
 
-                    var result = await SteamUtils.FixManifests(path);
+                var result = await SteamUtils.FixManifests(path);
 
-                    NotificationWindow win = new NotificationWindow(
-                        $"✔ Lua & Manifest loaded",
-                        3
-                    );
-                    win.Show();
+                NotificationWindow win = new NotificationWindow(
+                    $"✔ Lua & Manifest loaded",
+                    3
+                );
+                win.Show();
 
-                    await Task.Delay(1000);
+                await Task.Delay(1000);
 
-                    SteamUtils.Reset();
-                }
-                catch (Exception ex)
-                {
-                    var result = await SteamUtils.FixManifests(path);
-                    MessageBox.Show($"Something went wrong: {ex.Message}", "Error");
-                }
-                finally
-                {
-                    if (File.Exists(tempZip)) File.Delete(tempZip);
-                }
+                SteamUtils.Reset();
+            }
+            catch (Exception ex)
+            {
+                var result = await SteamUtils.FixManifests(path);
+                MessageBox.Show($"Something went wrong: {ex.Message}", "Error");
+            }
+            finally
+            {
+                if (File.Exists(tempZip)) File.Delete(tempZip);
             }
         }
 

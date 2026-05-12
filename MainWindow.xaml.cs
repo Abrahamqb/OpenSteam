@@ -87,7 +87,7 @@ namespace OpenSteam
         {
             Plugins plugins = new Plugins();
             await plugins.ManagePluginsInstall();
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
             await plugins.LuaManagerInstallerAsync(SteamUtils.GetSteamPath());
         }
 
@@ -218,12 +218,13 @@ namespace OpenSteam
         private void DisableWebHelper(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.DisableWebHelper = !Properties.Settings.Default.DisableWebHelper;
-
+            Properties.Settings.Default.Save();
         }
 
         private void DisableNFSWAlert(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.DisableNFSWAlert = !Properties.Settings.Default.DisableNFSWAlert;
+            Properties.Settings.Default.Save();
         }
     }
 }

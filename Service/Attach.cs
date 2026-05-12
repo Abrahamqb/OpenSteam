@@ -9,6 +9,8 @@ namespace OpenSteam.Service
 {
     public class Attach
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         public async Task PatchSteam(string path, bool Delet)
         {
             if (Delet)
@@ -66,26 +68,23 @@ namespace OpenSteam.Service
 
                     string zipPath = Path.Combine(tempPath, "inject.zip");
 
-                    using (HttpClient client = new HttpClient())
+                    _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+                    try 
                     {
-                        client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-                        try 
-                        {
-                            byte[] fileData = await client.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteamMore-Dev/releases/latest/download/inject.zip");
-                            
-                            await File.WriteAllBytesAsync(zipPath, fileData);
+                        byte[] fileData = await _httpClient.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteamMore-Dev/releases/latest/download/inject.zip");
+                        
+                        await File.WriteAllBytesAsync(zipPath, fileData);
 
-                            ZipFile.ExtractToDirectory(zipPath, path, true);
+                        ZipFile.ExtractToDirectory(zipPath, path, true);
 
-                            File.Delete(zipPath);
+                        File.Delete(zipPath);
 
-                            NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
-                            win.Show();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error: {ex.Message}");
-                        }
+                        NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
+                        win.Show();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
                     }
                 }
             }

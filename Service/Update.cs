@@ -7,6 +7,8 @@ namespace OpenSteam.Service
 {
     public static class Update
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         public static string GetVersion()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -17,24 +19,21 @@ namespace OpenSteam.Service
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+
+                string latestVersionString = await _httpClient.GetStringAsync("https://raw.githubusercontent.com/Abrahamqb/OpenSteam/refs/heads/master/version.txt");
+                latestVersionString = latestVersionString.Trim();
+
+                Version latestVersion = new Version(latestVersionString);
+                Version currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
+                if (latestVersion > currentVersion)
                 {
-                    client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-
-                    string latestVersionString = await client.GetStringAsync("https://raw.githubusercontent.com/Abrahamqb/OpenSteam/refs/heads/master/version.txt");
-                    latestVersionString = latestVersionString.Trim();
-
-                    Version latestVersion = new Version(latestVersionString);
-                    Version currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
-                    if (latestVersion > currentVersion)
+                    if (MessageBoxResult.Yes == MessageBox.Show($"A new version is available: v{latestVersion}\n\nYou are using: v{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build} \nDo you want to update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Information))
                     {
-                        if (MessageBoxResult.Yes == MessageBox.Show($"A new version is available: v{latestVersion}\n\nYou are using: v{currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build} \nDo you want to update?", "Update Available", MessageBoxButton.YesNo, MessageBoxImage.Information))
-                        {
-                            NotificationWindow win = new NotificationWindow("Updating... May take a few seconds :)", 5);
-                            win.Show();
-                            await DownloadAndInstallUpdate();
-                        }
+                        NotificationWindow win = new NotificationWindow("Updating... May take a few seconds :) ", 5);
+                        win.Show();
+                        await DownloadAndInstallUpdate();
                     }
                 }
             }
@@ -50,11 +49,8 @@ namespace OpenSteam.Service
             string appDir = Path.GetDirectoryName(appPath);
             string newAppPath = Path.Combine(appDir, "OpenSteam_new.exe");
 
-            using (HttpClient client = new HttpClient())
-            {
-                byte[] data = await client.GetByteArrayAsync("https://github.com/abrahamqb/OpenSteam/releases/latest/download/OpenSteam.exe");
-                await File.WriteAllBytesAsync(newAppPath, data);
-            }
+            byte[] data = await _httpClient.GetByteArrayAsync("https://github.com/abrahamqb/OpenSteam/releases/latest/download/OpenSteam.exe");
+            await File.WriteAllBytesAsync(newAppPath, data);
 
             string batchCode = $@"
 @echo off
@@ -87,21 +83,18 @@ del ""%~f0""
                     }
                 });
 
-                using (HttpClient client = new HttpClient())
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+                string NewsInfo = await _httpClient.GetStringAsync("https://raw.githubusercontent.com/Abrahamqb/OpenSteamMore-Dev/refs/heads/main/News");
+                NewsInfo = NewsInfo.Trim().Replace("\r\n", "\n").Normalize();
+                if (string.IsNullOrEmpty(NewsInfo))
                 {
-                    client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-                    string NewsInfo = await client.GetStringAsync("https://raw.githubusercontent.com/Abrahamqb/OpenSteamMore-Dev/refs/heads/main/News");
-                    NewsInfo = NewsInfo.Trim().Replace("\r\n", "\n").Normalize();
-                    if (string.IsNullOrEmpty(NewsInfo))
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    if (NewsInfo != File.ReadAllText(TempPath + NameNews))
-                    {
-                        MessageBox.Show($"{NewsInfo}", "Dev", MessageBoxButton.OK, MessageBoxImage.Information);
-                        File.WriteAllText(TempPath + NameNews, NewsInfo);
-                    }
+                if (NewsInfo != File.ReadAllText(TempPath + NameNews))
+                {
+                    MessageBox.Show($"{NewsInfo}", "Dev", MessageBoxButton.OK, MessageBoxImage.Information);
+                    File.WriteAllText(TempPath + NameNews, NewsInfo);
                 }
             }
             catch

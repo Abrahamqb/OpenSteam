@@ -6,14 +6,9 @@ namespace OpenSteam.Service
 {
     public static class SettingsFunction
     {
-        private static string GetSteamPath()
-        {
-            return SteamUtils.GetSteamPath();
-        }
-
         public static void CleanSteamCache()
         {
-            string steamPath = GetSteamPath();
+            string steamPath = SteamUtils.GetSteamPath();
             if (string.IsNullOrEmpty(steamPath)) return;
 
             string appCache = Path.Combine(steamPath, "appcache");
@@ -34,7 +29,7 @@ namespace OpenSteam.Service
 
         public static void OpenFolder() 
         {
-            string steamPath = GetSteamPath();
+            string steamPath = SteamUtils.GetSteamPath();
             string appsPath = Path.Combine(steamPath);
 
             if (Directory.Exists(appsPath))
@@ -43,7 +38,7 @@ namespace OpenSteam.Service
 
         public static void BackupSteamConfig()
         {
-            string steamPath = GetSteamPath();
+            string steamPath = SteamUtils.GetSteamPath();
             string configSource = Path.Combine(steamPath, "config");
             string backupDest = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Backup_Config");
 

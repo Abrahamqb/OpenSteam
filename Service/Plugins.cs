@@ -8,34 +8,33 @@ namespace OpenSteam.Service
 {
     public class Plugins
     {
+        private static readonly HttpClient _httpClient = new HttpClient();
+
         public async Task ManagePluginsInstall()
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                byte[] millenniumInstaller = await _httpClient.GetByteArrayAsync("https://github.com/SteamClientHomebrew/Installer/releases/latest/download/MillenniumInstaller-Windows.exe");
+                string installerPath = Path.Combine(Path.GetTempPath(), "MillenniumInstaller.exe");
+
+                File.WriteAllBytes(installerPath, millenniumInstaller);
+
+                ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    byte[] millenniumInstaller = await client.GetByteArrayAsync("https://github.com/SteamClientHomebrew/Installer/releases/latest/download/MillenniumInstaller-Windows.exe");
-                    string installerPath = Path.Combine(Path.GetTempPath(), "MillenniumInstaller.exe");
+                    FileName = installerPath,
+                    UseShellExecute = true,
+                    CreateNoWindow = false
+                };
+                Process p = Process.Start(startInfo);
 
-                    File.WriteAllBytes(installerPath, millenniumInstaller);
-
-                    ProcessStartInfo startInfo = new ProcessStartInfo
+                if (p != null)
+                {
+                    await Task.Run(() =>
                     {
-                        FileName = installerPath,
-                        UseShellExecute = true,
-                        CreateNoWindow = false
-                    };
-                    Process p = Process.Start(startInfo);
-
-                    if (p != null)
-                    {
-                        await Task.Run(() =>
-                        {
-                            p.WaitForExit();
-                        });
-                        NotificationWindow win = new NotificationWindow("¡Millennium installed!", 2);
-                        win.Show();
-                    }
+                        p.WaitForExit();
+                    });
+                    NotificationWindow win = new NotificationWindow("¡Millennium installed!", 2);
+                    win.Show();
                 }
             }
             catch (Exception ex)
@@ -58,12 +57,9 @@ namespace OpenSteam.Service
 
             try
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-                    byte[] zipBytes = await client.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Plugins/LuaManager.zip");
-                    await File.WriteAllBytesAsync(tempZip, zipBytes);
-                }
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+                byte[] zipBytes = await _httpClient.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteam/raw/refs/heads/master/Plugins/LuaManager.zip");
+                await File.WriteAllBytesAsync(tempZip, zipBytes);
 
                 string extractError = await Task.Run(() =>
                 {
