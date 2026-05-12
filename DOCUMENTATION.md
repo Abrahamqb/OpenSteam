@@ -1,8 +1,5 @@
 # OpenSteam Manager - Documentación de la Aplicación
 
-## 1. Introducción
-
-OpenSteam Manager es una aplicación de escritorio WPF diseñada para mejorar la experiencia de usuario de Steam, proporcionando herramientas para la gestión de parches, plugins, scripts Lua y utilidades de configuración. Permite a los usuarios instalar y desinstalar parches, gestionar plugins como Millennium y LuaManager, buscar e instalar scripts Lua para juegos específicos desde una fuente online, y realizar tareas de mantenimiento como limpiar la caché de Steam o hacer copias de seguridad de la configuración.
 
 ## 2. Componentes Principales de la Interfaz de Usuario (UI)
 
