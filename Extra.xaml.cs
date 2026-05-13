@@ -34,6 +34,10 @@ namespace OpenSteam
                     MessageBox.Show("Redirecting to Online-fix.me.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     return "https://online-fix.me/";
                 case ExtraUrlOption.SteamAchievementManager:
+                    if(MessageBoxResult.Yes != MessageBox.Show("Using this option may infect your account. Do you wish to continue?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    {
+                        return string.Empty;
+                    }
                     MessageBox.Show("Redirecting to Steam Archievement Manager.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     return "https://github.com/gibbed/SteamAchievementManager";
                 default: return string.Empty;
