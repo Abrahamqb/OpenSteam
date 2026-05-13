@@ -36,6 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpCompress" Version="0.48.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>

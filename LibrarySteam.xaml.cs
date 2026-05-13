@@ -1,4 +1,5 @@
 using OpenSteam.Service;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -12,10 +13,12 @@ namespace OpenSteam
         private string luaPath;
         private string steamPath;
         private List<Game> fullGameList = new List<Game>();
+        private ObservableCollection<Game> installedLuaGames = new ObservableCollection<Game>();
 
         public LibrarySteam()
         {
             InitializeComponent();
+            LuaListBox.ItemsSource = installedLuaGames;
 
             steamPath = SteamUtils.GetSteamPath();
 
@@ -40,7 +43,7 @@ namespace OpenSteam
             {
                 fullGameList = await SteamUtils.DownloadGameListAsync();
             }
-            catch { /* Fallback to empty list if network/cache fails */ }
+            catch { }
 
             await RefreshLuaList();
         }
@@ -55,7 +58,7 @@ namespace OpenSteam
                 {
                     string content = File.ReadAllText(acfPath);
                     var match = Regex.Match(content, "\"name\"\\s+\"([^\"]+)\"");
-                    if (match.Success) return match.Groups[1].Value + " (Good)";
+                    if (match.Success) return match.Groups[1].Value;
                 }
             }
             catch { }
@@ -64,15 +67,15 @@ namespace OpenSteam
             var game = fullGameList.FirstOrDefault(g => g.appid == appId);
             if (game != null)
             {
-                return game.name + " (Very Good)";
+                return game.name;
             }
 
-            return appId + ".lua";
+            return appId;
         }
 
         private async Task RefreshLuaList()
         {
-            LuaListBox.Items.Clear();
+            installedLuaGames.Clear();
             if (!Directory.Exists(luaPath)) return;
 
             string[] files = Directory.GetFiles(luaPath, "*.lua");
@@ -82,12 +85,11 @@ namespace OpenSteam
                 string id = Path.GetFileNameWithoutExtension(file);
                 string realName = GetGameNameLocal(id);
 
-                ListBoxItem item = new ListBoxItem
+                installedLuaGames.Add(new Game
                 {
-                    Content = realName,
-                    Tag = Path.GetFileName(file)
-                };
-                LuaListBox.Items.Add(item);
+                    appid = id,
+                    name = realName
+                });
             }
         }
 
@@ -97,26 +99,19 @@ namespace OpenSteam
 
             if (MessageBox.Show("Delete selected files?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                var itemsToRemove = new List<ListBoxItem>();
-                foreach (ListBoxItem item in LuaListBox.SelectedItems)
+                var itemsToRemove = LuaListBox.SelectedItems.Cast<Game>().ToList();
+                foreach (var game in itemsToRemove)
                 {
-                    itemsToRemove.Add(item);
                     try
                     {
-                        string fileName = item.Tag.ToString();
-                        string path = Path.Combine(luaPath, fileName);
+                        string path = Path.Combine(luaPath, game.appid + ".lua");
                         if (File.Exists(path)) File.Delete(path);
+                        installedLuaGames.Remove(game);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error deleting file: {ex.Message}");
+                        MessageBox.Show($"Error deleting file for {game.name}: {ex.Message}");
                     }
-                }
-
-                // Remove from UI without refreshing everything
-                foreach (var item in itemsToRemove)
-                {
-                    LuaListBox.Items.Remove(item);
                 }
             }
         }
@@ -124,12 +119,11 @@ namespace OpenSteam
         private void BtnOpenSteam_Click(object sender, RoutedEventArgs e)
         {
             if (LuaListBox.SelectedItems.Count == 0) return;
-            foreach (ListBoxItem item in LuaListBox.SelectedItems)
+            foreach (Game game in LuaListBox.SelectedItems)
             {
-                var appid = item.Tag.ToString().Replace(".lua", "");
                 try
                 {
-                    Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{appid}") { UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo($"https://store.steampowered.com/app/{game.appid}") { UseShellExecute = true });
                 }
                 catch { }
             }

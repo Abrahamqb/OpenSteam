@@ -83,6 +83,14 @@ namespace OpenSteam
             DynamicContent.Content = null;
         }
 
+        private void NavByPass_Click(object sender, RoutedEventArgs e)
+        {
+            HomeGrid.Visibility = Visibility.Collapsed;
+            SettingsGrid.Visibility = Visibility.Collapsed;
+            DynamicContent.Visibility = Visibility.Visible;
+            DynamicContent.Content = new OnlineByPass();
+        }
+
         private void NavOnline_Click(object sender, RoutedEventArgs e)
         {
             HomeGrid.Visibility = Visibility.Collapsed;

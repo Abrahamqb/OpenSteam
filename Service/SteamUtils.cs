@@ -56,6 +56,69 @@ namespace OpenSteam.Service
                 System.Windows.MessageBox.Show($"Something went wrong: {ex.Message}");
             }
         }
+        public static List<Game> GetInstalledGames()
+        {
+            var installedGames = new List<Game>();
+            string steamPath = GetSteamPath();
+            if (string.IsNullOrEmpty(steamPath)) return installedGames;
+
+            var libraryPaths = new List<string> { steamPath };
+
+            // Parse libraryfolders.vdf
+            string vdfPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
+            if (File.Exists(vdfPath))
+            {
+                try
+                {
+                    string vdfContent = File.ReadAllText(vdfPath);
+                    var matches = Regex.Matches(vdfContent, "\"path\"\\s+\"([^\"]+)\"");
+                    foreach (Match match in matches)
+                    {
+                        string path = match.Groups[1].Value.Replace("\\\\", "\\");
+                        if (!libraryPaths.Contains(path) && Directory.Exists(path))
+                        {
+                            libraryPaths.Add(path);
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            foreach (var libPath in libraryPaths)
+            {
+                string steamAppsPath = Path.Combine(libPath, "steamapps");
+                if (Directory.Exists(steamAppsPath))
+                {
+                    var acfFiles = Directory.GetFiles(steamAppsPath, "appmanifest_*.acf");
+                    foreach (var acf in acfFiles)
+                    {
+                        try
+                        {
+                            string content = File.ReadAllText(acf);
+                            var appidMatch = Regex.Match(content, "\"appid\"\\s+\"(\\d+)\"");
+                            var nameMatch = Regex.Match(content, "\"name\"\\s+\"([^\"]+)\"");
+
+                            if (appidMatch.Success && nameMatch.Success)
+                            {
+                                string appid = appidMatch.Groups[1].Value;
+                                // Ignore common redistributables or non-game apps if possible
+                                if (appid == "228980" || appid == "250820") continue; 
+
+                                installedGames.Add(new Game
+                                {
+                                    appid = appid,
+                                    name = nameMatch.Groups[1].Value
+                                });
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            return installedGames.GroupBy(g => g.appid).Select(g => g.First()).OrderBy(g => g.name).ToList();
+        }
+
         public static string GetSteamPath()
         {
             if (!string.IsNullOrEmpty(_cachedSteamPath))

@@ -150,7 +150,7 @@
                             <RadioButton Content="🏠 Dashboard" IsChecked="True" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavHome_Click"/>
                             <RadioButton Content="⚡ Online Lua" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavOnline_Click"/>
                             <RadioButton Content="📚 Library" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavLibrary_Click"/>
-                            <RadioButton Content="🏴‍ OnlineByPass" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavLibrary_Click"/>
+                            <RadioButton Content="🏴‍ OnlineByPass" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavByPass_Click"/>
                             <RadioButton Content="🛠 Extras" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavExtra_Click"/>
                             <RadioButton Content="⚙ Settings" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavSettings_Click"/>
                             <RadioButton Content="ℹ Information" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavInfo_Click"/>
