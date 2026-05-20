@@ -2,7 +2,7 @@
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     public partial class NotificationWindow : Window
     {

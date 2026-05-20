@@ -4,8 +4,9 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
+using OpenSteam.Views;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
     public class LuaLoaders
     {
@@ -37,6 +38,7 @@ namespace OpenSteam.Service
 
                     string destinationFile = Path.Combine(luaPathSteam, luaLoader.SafeFileName);
                     File.Copy(luaLoader.FileName, destinationFile, true);
+                    SteamUtils.FixManifests(SteamUtils.GetSteamPath());
                     NotificationWindow win = new NotificationWindow("¡Lua successfully loaded!", 2);
                     win.Show();
                 }
@@ -99,7 +101,7 @@ namespace OpenSteam.Service
 
             var apps = doc.RootElement.GetProperty("apps");
             if (apps.GetArrayLength() == 0)
-                throw new Exception("La API no devolvió apps.");
+                throw new Exception("API NOT WORK");
 
             var app = apps[0];
             var depots = app.GetProperty("depots");

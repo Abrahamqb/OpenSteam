@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     public partial class Extra : UserControl
     {

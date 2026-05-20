@@ -1,7 +1,8 @@
-using OpenSteam.Service;
+using OpenSteam.Services;
+using OpenSteam.Models;
 using System.Windows.Controls;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     public partial class Information : UserControl
     {

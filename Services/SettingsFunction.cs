@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
     public static class SettingsFunction
     {

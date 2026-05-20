@@ -2,8 +2,9 @@
 using System.IO;
 using System.Net.Http;
 using System.Windows;
+using OpenSteam.Views;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
     public static class Update
     {

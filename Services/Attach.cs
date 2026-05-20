@@ -2,8 +2,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Text.Json;
+using OpenSteam.Views;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
     public class Attach
     {

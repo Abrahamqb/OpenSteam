@@ -1,4 +1,4 @@
-﻿namespace OpenSteam.Service
+﻿namespace OpenSteam.Models
 {
     public class Game
     {

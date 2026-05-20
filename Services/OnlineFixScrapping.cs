@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
     class OnlineFixScrapping
     {

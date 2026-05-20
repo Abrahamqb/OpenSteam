@@ -1,9 +1,11 @@
-using OpenSteam.Service;
+using OpenSteam.Properties;
+using OpenSteam.Services;
+using OpenSteam.Models;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     public partial class OnlineLua : UserControl
     {
@@ -41,6 +43,9 @@ namespace OpenSteam
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
+
+            LuaLoaders luaLoaders = new LuaLoaders();
+            string steamPath = SteamUtils.GetSteamPath();
             string userInput = SearchBox.Text;
 
             if (string.IsNullOrWhiteSpace(userInput))
@@ -56,33 +61,39 @@ namespace OpenSteam
 
             try
             {
-                var results = await Task.Run(() => SteamUtils.GetFilteredGames(userInput, CachedList));
-
-                if (results == null || !results.Any())
+                if (Properties.Settings.Default.FilterManager)
                 {
-                    MessageBox.Show("No games found with that ID or Name.", "Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
+                    var results = await Task.Run(() => SteamUtils.GetFilteredGames(userInput, CachedList));
+
+                    if (results == null || !results.Any())
+                    {
+                        MessageBox.Show("No games found with that ID or Name.", "Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+
+                    Game selectedGame = results.First();
+
+                    if (selectedGame.nsfw && !Properties.Settings.Default.DisableNFSWAlert)
+                    {
+                        var res = MessageBox.Show("This game is marked as NSFW. Continue?", "NSFW Warning",
+                                                 MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (res == MessageBoxResult.No) return;
+                    }
+
+                    if (selectedGame.drm)
+                    {
+                        var res = MessageBox.Show("This game has DRM. It may not work. Continue?", "DRM Warning",
+                                                 MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (res == MessageBoxResult.No) return;
+                    }
+
+                    await luaLoaders.OnlineLoad(selectedGame.appid, steamPath);
                 }
-
-                Game selectedGame = results.First();
-
-                if (selectedGame.nsfw && !Properties.Settings.Default.DisableNFSWAlert)
+                else
                 {
-                    var res = MessageBox.Show("This game is marked as NSFW. Continue?", "NSFW Warning",
-                                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (res == MessageBoxResult.No) return;
+                    await luaLoaders.OnlineLoad(userInput, steamPath);
                 }
-
-                if (selectedGame.drm)
-                {
-                    var res = MessageBox.Show("This game has DRM. It may not work. Continue?", "DRM Warning",
-                                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                    if (res == MessageBoxResult.No) return;
-                }
-
-                LuaLoaders luaLoaders = new LuaLoaders();
-                string steamPath = SteamUtils.GetSteamPath();
-                await luaLoaders.OnlineLoad(selectedGame.appid, steamPath);
+                
             }
             catch (Exception ex)
             {

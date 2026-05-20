@@ -1,4 +1,5 @@
-using OpenSteam.Service;
+using OpenSteam.Services;
+using OpenSteam.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     /// <summary>
     /// Lógica de interacción para OnlineByPass.xaml

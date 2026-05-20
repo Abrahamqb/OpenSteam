@@ -21,7 +21,7 @@
 
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <ApplicationIcon>steam.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\steam.ico</ApplicationIcon>
     <Version>2.2.0</Version>
   </PropertyGroup>
 
@@ -29,10 +29,6 @@
     <Content Include="Resources\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="steam.ico" />
   </ItemGroup>
 
   <ItemGroup>

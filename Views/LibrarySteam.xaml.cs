@@ -1,4 +1,5 @@
-using OpenSteam.Service;
+using OpenSteam.Services;
+using OpenSteam.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     public partial class LibrarySteam : UserControl
     {

@@ -1,12 +1,13 @@
 using OpenSteam.Properties;
-using OpenSteam.Service;
+using OpenSteam.Services;
+using OpenSteam.Models;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     public partial class MainWindow : Window
     {

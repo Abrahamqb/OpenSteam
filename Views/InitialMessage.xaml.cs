@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OpenSteam
+namespace OpenSteam.Views
 {
     /// <summary>
     /// Lógica de interacción para InitialMessage.xaml

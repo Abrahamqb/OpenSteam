@@ -4,8 +4,9 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using OpenSteam.Models;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
 
     public static class SteamUtils
