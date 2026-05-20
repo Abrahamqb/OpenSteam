@@ -55,7 +55,6 @@ namespace OpenSteam.Services
 
         public static async Task<string> SteamLuaGenerator(int appId, string path, int cacheDays = 7)
         {
-            // Use the static HttpClient instance
             string apiUrl = $"https://api.steamproof.net/apps/depots?ids={appId}";
             string apiJson = await _staticHttpClient.GetStringAsync(apiUrl);
 
@@ -63,9 +62,14 @@ namespace OpenSteam.Services
             Directory.CreateDirectory(cacheDir);
 
             string cacheFile = Path.Combine(cacheDir, "depotkeys.json");
-            string keysJson;
-            string keysUrl = "https://gitlab.com/steamautocracks/manifesthub/-/raw/main/depotkeys.json";
 
+            string[] keysUrls = new[]
+            {
+                "https://gitlab.com/steamautocracks/manifesthub/-/raw/main/depotkeys.json",
+                "https://api.993499094.xyz/depotkeys.json"
+            };
+
+            var depotKeys = new Dictionary<string, string>();
             bool shouldRefresh = true;
 
             if (File.Exists(cacheFile))
@@ -75,27 +79,49 @@ namespace OpenSteam.Services
 
                 if (!isExpired)
                 {
-                    keysJson = await File.ReadAllTextAsync(cacheFile, Encoding.UTF8);
-                    shouldRefresh = false;
-                }
-                else
-                {
-                    keysJson = string.Empty;
+                    try
+                    {
+                        string cachedJson = await File.ReadAllTextAsync(cacheFile, Encoding.UTF8);
+                        depotKeys = JsonSerializer.Deserialize<Dictionary<string, string>>(cachedJson)
+                                    ?? new Dictionary<string, string>();
+                        shouldRefresh = false;
+                    }
+                    catch
+                    {
+                        shouldRefresh = true;
+                    }
                 }
             }
-            else
-            {
-                keysJson = string.Empty;
-            }
+
 
             if (shouldRefresh)
             {
-                keysJson = await _staticHttpClient.GetStringAsync(keysUrl);
-                await File.WriteAllTextAsync(cacheFile, keysJson, Encoding.UTF8);
-            }
 
-            var depotKeys = JsonSerializer.Deserialize<Dictionary<string, string>>(keysJson)
-                            ?? new Dictionary<string, string>();
+                foreach (string url in keysUrls)
+                {
+                    try
+                    {
+                        string jsonFromServer = await _staticHttpClient.GetStringAsync(url);
+                        var downloadedKeys = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonFromServer);
+
+                        if (downloadedKeys != null)
+                        {
+                            foreach (var kvp in downloadedKeys)
+                            {
+                                depotKeys.TryAdd(kvp.Key, kvp.Value);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+
+                string finalCacheJson = JsonSerializer.Serialize(depotKeys);
+                await File.WriteAllTextAsync(cacheFile, finalCacheJson, Encoding.UTF8);
+            }
 
             using var doc = JsonDocument.Parse(apiJson);
 

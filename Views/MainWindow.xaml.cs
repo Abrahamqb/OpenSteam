@@ -44,6 +44,7 @@ namespace OpenSteam.Views
             CloseSteamPatch_.IsChecked = Properties.Settings.Default.CloseSteamBefore;
             DeleteAutoPatch_.IsChecked = Properties.Settings.Default.DeleteOnClose;
             DisableNFSWAlert_.IsChecked = Properties.Settings.Default.DisableNFSWAlert;
+            DisableFilter_.IsChecked = Properties.Settings.Default.FilterManager;
         }
         public void ShowInitialMessage()
         {
@@ -246,6 +247,12 @@ namespace OpenSteam.Views
         private void DisableNFSWAlert(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.DisableNFSWAlert = DisableNFSWAlert_.IsChecked ?? false;
+            Properties.Settings.Default.Save();
+        }
+
+        private void DisableFilterToOnlineLua(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.FilterManager = DisableFilter_.IsChecked ?? false;
             Properties.Settings.Default.Save();
         }
     }

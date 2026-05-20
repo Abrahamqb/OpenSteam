@@ -132,20 +132,20 @@
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Border.OpacityMask>
-            
+
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="230"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <Border Background="#090909" Grid.Column="0" CornerRadius="20,0,0,20" BorderThickness="0,0,1,0" BorderBrush="#1AFFFFFF">
                     <StackPanel>
                         <StackPanel Margin="0,30,0,30" HorizontalAlignment="Center">
                             <TextBlock Text="OPENSTEAM" Foreground="White" FontSize="22" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
                             <TextBlock Text="MANAGER" Foreground="#007ACC" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
                         </StackPanel>
-                        
+
                         <StackPanel>
                             <RadioButton Content="🏠 Dashboard" IsChecked="True" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavHome_Click"/>
                             <RadioButton Content="⚡ Online Lua" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavOnline_Click"/>
@@ -155,19 +155,19 @@
                             <RadioButton Content="⚙ Settings" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavSettings_Click"/>
                             <RadioButton Content="ℹ Information" Style="{StaticResource MenuRadioButton}" GroupName="Menu" Click="NavInfo_Click"/>
                         </StackPanel>
-                        
+
                         <TextBlock x:Name="txtVersion" Text="v2.1 Beta" Foreground="#44FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,100,0,0" VerticalAlignment="Bottom"/>
                     </StackPanel>
                 </Border>
-                
+
                 <Grid Grid.Column="1">
                     <Border Height="40" VerticalAlignment="Top" Background="Transparent" MouseDown="Drag_MouseDown" Panel.ZIndex="10">
                         <Button x:Name="ExitButton" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" Width="45" Height="32" Style="{StaticResource ExitButtonStyle}" Click="ExitButton_Click" />
                     </Border>
-                    
+
                     <ContentControl x:Name="DynamicContent" Margin="0,40,0,0" Visibility="Collapsed"/>
-                    
-                    <Grid x:Name="HomeGrid" Margin="0,40,0,0">
+
+                    <Grid x:Name="HomeGrid" Margin="0,40,0,0" Visibility="Collapsed">
                         <Canvas IsHitTestVisible="False"/>
 
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -176,14 +176,14 @@
                                     <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.3"/>
                                 </TextBlock.Effect>
                             </TextBlock>
-                            
+
                             <UniformGrid Columns="2" Width="470">
                                 <Button x:Name="patchButton" Content="Patch Steam" Style="{StaticResource PrimaryAction}" Height="50" Click="patchButton_Click"/>
                                 <Button x:Name="DeletePatchButton" Content="Delete Patch" Style="{StaticResource DangerAction}" Height="50" Click="DeletePatchButton_Click"/>
                                 <Button x:Name="ResetSteam" Content="Restart Steam" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="50" Click="ResetSteam_Click"/>
                                 <Button x:Name="Plugins" Content="Millennium + Plugin" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="50" Click="Plugins_Click"/>
                             </UniformGrid>
-                            
+
                             <Button x:Name="ManualLuaButton" Content="Load Custom LuaLoader" Style="{StaticResource ModernButtonStyle}" Background="#1E1E1E" Height="40" Width="458" Margin="6,15,6,0" Click="ManualLua_Click"/>
 
                             <Border Background="#0FFFFFFF" CornerRadius="8" Margin="0,40,0,0" Padding="15,10" HorizontalAlignment="Center">
@@ -194,20 +194,23 @@
                             </Border>
                         </StackPanel>
                     </Grid>
-                    
-                    <Grid x:Name="SettingsGrid" Margin="0,40,0,0" Visibility="Collapsed">
+
+                    <Grid x:Name="SettingsGrid" Margin="0,40,0,0">
                         <StackPanel Margin="40" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400">
                             <TextBlock Text="SETTINGS" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" Margin="0,0,0,30"/>
-                            
+
                             <TextBlock Text="GENERAL" Foreground="#007ACC" FontSize="13" FontWeight="Bold" Margin="0,0,0,15"/>
                             <CheckBox x:Name="DeleteAutoPatch_" Content="Delete patch on close" Foreground="White" Margin="0,8" Checked="DeleteAutoPatch" Unchecked="DeleteAutoPatch"/>
                             <CheckBox x:Name="AutoPatch_" Content="Auto-Patch on Launch" Foreground="White" Margin="0,8" Checked="AutoPatch" Unchecked="AutoPatch"/>
                             <CheckBox x:Name="CloseSteamPatch_" Content="Close Steam before Patching" Foreground="White" Margin="0,8" Checked="CloseSteamPatch" Unchecked="CloseSteamPatch"/>
                             <CheckBox x:Name="DisableNFSWAlert_" Content="Disable the NSFW alert" Foreground="White" Margin="0,8" Checked="DisableNFSWAlert" Unchecked="DisableNFSWAlert"/>
 
+
+                            <CheckBox x:Name="DisableFilter_" Content="Filter for Online Lua" Foreground="White" Margin="0,8"  Checked="DisableFilterToOnlineLua" Unchecked="DisableFilterToOnlineLua"/>
+
                             <TextBlock Text="STEAM" Foreground="#007ACC" FontSize="13" FontWeight="Bold" Margin="0,20,0,15"/>
                             <CheckBox x:Name="DisableWebHelper_" Content="Disable Web Helper" Foreground="White" Margin="0,8,0,25" Checked="DisableWebHelper" Unchecked="DisableWebHelper"/>
-                            
+
                             <UniformGrid Columns="2">
                                 <Button Content="Create a backup (RECOMMENDED)" Style="{StaticResource DangerAction}" Height="35" Margin="5,5,5,5" FontSize="11" Click="SteamBackup_Click" Background="#FF459A20"/>
                                 <Button Content="Clean Steam Cache" Style="{StaticResource DangerAction}" Height="35" Margin="5" FontSize="11" Click="CleanCache_Click"/>
@@ -216,7 +219,7 @@
                             </UniformGrid>
                         </StackPanel>
                     </Grid>
-                    
+
                 </Grid>
             </Grid>
         </Border>
