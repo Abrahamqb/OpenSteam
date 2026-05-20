@@ -232,7 +232,7 @@ namespace OpenSteam.Services
             string depotCache = Path.Combine(steamPath, "depotcache");
 
             if (!Directory.Exists(pluginDir))
-                throw new DirectoryNotFoundException($"No se encontró la carpeta: {pluginDir}");
+                throw new DirectoryNotFoundException($"No found: {pluginDir}");
 
             Directory.CreateDirectory(depotCache);
 

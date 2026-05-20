@@ -67,7 +67,7 @@ namespace OpenSteam.Views
 
                     if (results == null || !results.Any())
                     {
-                        MessageBox.Show("No games found with that ID or Name.", "Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("No games found with that ID or Name. You can try disabling the filter in the settings (Only works with appid)", "Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
                         return;
                     }
 
