@@ -106,5 +106,17 @@ namespace OpenSteam.Properties {
                 this["FilterManager"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Lua")]
+        public string LuaPath {
+            get {
+                return ((string)(this["LuaPath"]));
+            }
+            set {
+                this["LuaPath"] = value;
+            }
+        }
     }
 }

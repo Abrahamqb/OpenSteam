@@ -25,7 +25,7 @@ namespace OpenSteam.Views
 
             if (steamPath != null)
             {
-                luaPath = Path.Combine(steamPath, "config", "stplug-in");
+                luaPath = Path.Combine(steamPath, "config", Properties.Settings.Default.LuaPath);
                 if (!Directory.Exists(luaPath))
                 {
                     Directory.CreateDirectory(luaPath);

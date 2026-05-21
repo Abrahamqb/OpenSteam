@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using OpenSteam.Models;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using OpenSteam.Models;
+using System.Windows;
 
 namespace OpenSteam.Services
 {
@@ -56,6 +57,26 @@ namespace OpenSteam.Services
             {
                 System.Windows.MessageBox.Show($"Something went wrong: {ex.Message}");
             }
+        }
+
+        public static async Task StopSteam()
+        {
+            try
+                {
+                    Process[] processes = Process.GetProcessesByName("steam");
+
+                    if (processes.Length > 0)
+                    {
+                        foreach (Process proceso in processes)
+                        {
+                            try
+                            {
+                                proceso.Kill();
+                            }
+                            catch { }
+                        }
+                    }
+                } catch { MessageBox.Show("Try closing Steam manually before continuing"); }
         }
         public static List<Game> GetInstalledGames()
         {
@@ -228,7 +249,7 @@ namespace OpenSteam.Services
         public static async Task<(int updated, int luaUpdated)> FixManifests(string steamPath)
         {
             const string API = "https://api.steamproof.net";
-            string pluginDir = Path.Combine(steamPath, "config", "stplug-in");
+            string pluginDir = Path.Combine(steamPath, "config", Properties.Settings.Default.LuaPath);
             string depotCache = Path.Combine(steamPath, "depotcache");
 
             if (!Directory.Exists(pluginDir))

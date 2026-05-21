@@ -20,7 +20,7 @@ namespace OpenSteam.Services
                 MessageBox.Show("The Steam path was not detected.");
                 return;
             }
-            string luaPathSteam = Path.Combine(path, "config", "stplug-in");
+            string luaPathSteam = Path.Combine(path, "config", Properties.Settings.Default.LuaPath);
             OpenFileDialog luaLoader = new OpenFileDialog
             {
                 Filter = "Lua Files|*.lua",
@@ -185,7 +185,7 @@ namespace OpenSteam.Services
             // Use the instance HttpClient
             _instanceHttpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
 
-            string luaPathSteam = Path.Combine(path, "config", "stplug-in");
+            string luaPathSteam = Path.Combine(path, "config", Properties.Settings.Default.LuaPath);
             string ManifestPathSteam = Path.Combine(path, "depotcache");
             string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
 

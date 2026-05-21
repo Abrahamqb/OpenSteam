@@ -1,6 +1,6 @@
+using OpenSteam.Models;
 using OpenSteam.Properties;
 using OpenSteam.Services;
-using OpenSteam.Models;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -45,6 +45,12 @@ namespace OpenSteam.Views
             DeleteAutoPatch_.IsChecked = Properties.Settings.Default.DeleteOnClose;
             DisableNFSWAlert_.IsChecked = Properties.Settings.Default.DisableNFSWAlert;
             DisableFilter_.IsChecked = Properties.Settings.Default.FilterManager;
+            VersionToggle.IsChecked = Properties.Settings.Default.LuaPath == "Lua";
+
+            //Config Archive
+            UpdateLuaFolders();
+
+
         }
         public void ShowInitialMessage()
         {
@@ -213,6 +219,81 @@ namespace OpenSteam.Views
                 }
             }
         }
+        private void UpdateLuaFolders()
+        {
+            if (VersionToggle == null) return;
+
+            try
+            {
+                string steamPath = SteamUtils.GetSteamPath();
+                if (string.IsNullOrEmpty(steamPath)) return;
+
+                string steamConfigPath = Path.Combine(steamPath, "config");
+                string modernFolder = Path.Combine(steamConfigPath, "Lua");
+                string oldFolder = Path.Combine(steamConfigPath, "stplug-in");
+
+                if (!Directory.Exists(steamConfigPath))
+                {
+                    Directory.CreateDirectory(steamConfigPath);
+                }
+
+                if (VersionToggle.IsChecked == true)
+                {
+                    Properties.Settings.Default.LuaPath = "Lua";
+                    Properties.Settings.Default.Save();
+
+                    if (Directory.Exists(oldFolder))
+                    {
+                        CopyDirectory(oldFolder, modernFolder);
+                        Directory.Delete(oldFolder, true);
+                    }
+                    else if (!Directory.Exists(modernFolder))
+                    {
+                        Directory.CreateDirectory(modernFolder);
+                    }
+                }
+                else
+                {
+                    Properties.Settings.Default.LuaPath = "stplug-in";
+                    Properties.Settings.Default.Save();
+
+                    if (Directory.Exists(modernFolder))
+                    {
+                        CopyDirectory(modernFolder, oldFolder);
+                        Directory.Delete(modernFolder, true);
+                    }
+                    else if (!Directory.Exists(oldFolder))
+                    {
+                        Directory.CreateDirectory(oldFolder);
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"Error updating folders: {ex.Message}\n Make sure Steam is closed and run it as administrator.", "Folder Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static void CopyDirectory(string sourceDir, string destinationDir)
+        {
+            Directory.CreateDirectory(destinationDir);
+
+            foreach (string file in Directory.GetFiles(sourceDir))
+            {
+                string destFile = Path.Combine(destinationDir, Path.GetFileName(file));
+                File.Copy(file, destFile, true);
+            }
+
+            foreach (string subDir in Directory.GetDirectories(sourceDir))
+            {
+                string destSubDir = Path.Combine(destinationDir, Path.GetFileName(subDir));
+                CopyDirectory(subDir, destSubDir);
+            }
+        }
 
         // Settings Handlers
         private void CleanCache_Click(object sender, RoutedEventArgs e) => SettingsFunction.CleanSteamCache();
@@ -254,6 +335,11 @@ namespace OpenSteam.Views
         {
             Properties.Settings.Default.FilterManager = DisableFilter_.IsChecked ?? false;
             Properties.Settings.Default.Save();
+        }
+
+        private void VersionToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            UpdateLuaFolders();
         }
     }
 }

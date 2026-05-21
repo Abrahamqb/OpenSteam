@@ -1,71 +1,131 @@
+using OpenSteam.Services;
+using OpenSteam.Views;
+using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
-using OpenSteam.Views;
+using System.Threading.Tasks;
 
-namespace OpenSteam.Services
+public class Attach
 {
-    public class Attach
-    {
-        private static readonly HttpClient _httpClient = new HttpClient();
+    private static readonly HttpClient _httpClient = new HttpClient();
 
-        public async Task PatchSteam(string path, bool Delet)
+    public static string GetReleaseDownloadUrl(string jsonText)
+    {
+        if (string.IsNullOrWhiteSpace(jsonText))
+            return null;
+        try
         {
-            if (Delet)
+            using (JsonDocument doc = JsonDocument.Parse(jsonText))
             {
+                JsonElement root = doc.RootElement;
+
+                if (root.TryGetProperty("assets", out JsonElement assets))
+                {
+                    var releaseAsset = assets.EnumerateArray()
+                        .FirstOrDefault(asset => asset.GetProperty("name").GetString().EndsWith("-Release.zip", StringComparison.OrdinalIgnoreCase));
+                    if (releaseAsset.ValueKind != JsonValueKind.Undefined)
+                    {
+                        return releaseAsset.GetProperty("browser_download_url").GetString();
+                    }
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            Console.WriteLine("The provided text is not a valid JSON string.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Unexpected error: {ex.Message}");
+        }
+        return null;
+    }
+
+    public async Task PatchSteam(string path, bool Delet)
+    {
+        if (Delet)
+        {
+            await SteamUtils.StopSteam();
+            await Task.Delay(1000);
+
+            string[] FilesDeleted = new[]
+            {
+                "xinput1_4.dll",
+                "hid.dll",
+                "dwmapi.dll",
+                "OpenSteamTool.dll"
+            };
+            try
+            {
+                foreach (string Files in FilesDeleted)
+                {
+                    string fullPath = Path.Combine(path, Files);
+                    try { File.Delete(fullPath); }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            NotificationWindow win = new NotificationWindow("¡Unpatched Steam!", 2);
+            win.Show();
+        }
+        else
+        {
+            if (Directory.Exists(path))
+            {
+                string tempPath = Path.Combine(path, "temp");
+                if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
+
+                string zipPath = Path.Combine(tempPath, "inject.zip");
+
+                if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
+                {
+                    _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+                }
+
                 try
                 {
-                    string JsonPath = Path.Combine(path, "OpenSteamDel.json");
-                    if (File.Exists(JsonPath))
-                    {
-                        string JsonContent = File.ReadAllText(JsonPath);
-                        string[] FilesToDelete = JsonSerializer.Deserialize<string[]>(JsonContent);
+                    string apiUrl = "https://api.github.com/repos/OpenSteam001/OpenSteamTool/releases/latest";
+                    string jsonResponse = await _httpClient.GetStringAsync(apiUrl);
 
-                        if (FilesToDelete != null)
+                    string downloadUrl = GetReleaseDownloadUrl(jsonResponse);
+
+                    if (string.IsNullOrEmpty(downloadUrl))
+                    {
+                        Console.WriteLine("Error: Could not find the stable -Release.zip link.");
+                        return;
+                    }
+
+                    byte[] fileData = await _httpClient.GetByteArrayAsync(downloadUrl);
+                    await File.WriteAllBytesAsync(zipPath, fileData);
+
+                    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+                    {
+                        foreach (ZipArchiveEntry entry in archive.Entries)
                         {
-                            foreach (string file in FilesToDelete)
+                            if (entry.FullName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                             {
-                                string filePath = Path.Combine(path, file);
-                                if (File.Exists(filePath))
-                                {
-                                    File.Delete(filePath);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if (File.Exists(Path.Combine(path, "xinput1_4.dll")))
-                            {
-                                File.Delete(Path.Combine(path, "xinput1_4.dll"));
-                            }
-                            if (File.Exists(Path.Combine(path, "hid.dll")))
-                            {
-                                File.Delete(Path.Combine(path, "hid.dll"));
-                            }
-                            if (File.Exists(Path.Combine(path, "dwmapi.dll")))
-                            {
-                                File.Delete(Path.Combine(path, "dwmapi.dll"));
+                                string destinationPath = Path.Combine(path, entry.Name);
+
+                                entry.ExtractToFile(destinationPath, overwrite: true);
                             }
                         }
                     }
 
+                    File.Delete(zipPath);
+
+                    NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
+                    win.Show();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-                NotificationWindow win = new NotificationWindow("¡Unpatched Steam!", 2);
-                win.Show();
-            }
-            else
-            {
-                if (Directory.Exists(path))
-                {
-                    string tempPath = Path.Combine(path, "temp");
-                    if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
 
-                    string zipPath = Path.Combine(tempPath, "inject.zip");
+                    if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
 
                     _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
                     try
@@ -80,14 +140,9 @@ namespace OpenSteam.Services
 
                         NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
                         win.Show();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    } catch { }
                 }
             }
-
         }
     }
 }
