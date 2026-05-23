@@ -44,7 +44,7 @@ public class Attach
         return null;
     }
 
-    public async Task PatchSteam(string path, bool Delet)
+    public async Task PatchSteam(string path, bool Delet, int Mode)
     {
         if (Delet)
         {
@@ -53,96 +53,108 @@ public class Attach
 
             string[] FilesDeleted = new[]
             {
-                "xinput1_4.dll",
-                "hid.dll",
-                "dwmapi.dll",
-                "OpenSteamTool.dll"
-            };
-            try
+            "xinput1_4.dll",
+            "hid.dll",
+            "dwmapi.dll",
+            "OpenSteamTool.dll"
+        };
+
+            foreach (string file in FilesDeleted)
             {
-                foreach (string Files in FilesDeleted)
+                string fullPath = Path.Combine(path, file);
+                try
                 {
-                    string fullPath = Path.Combine(path, Files);
-                    try { File.Delete(fullPath); }
-                    catch { }
+                    if (File.Exists(fullPath))
+                    {
+                        File.Delete(fullPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error eliminando {file}: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
+
             NotificationWindow win = new NotificationWindow("¡Unpatched Steam!", 2);
             win.Show();
         }
         else
         {
-            if (Directory.Exists(path))
+            if (!Directory.Exists(path)) return;
+
+            string tempPath = Path.Combine(path, "temp");
+            if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
+
+            string zipPath = Path.Combine(tempPath, "inject.zip");
+
+            if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
             {
-                string tempPath = Path.Combine(path, "temp");
-                if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+            }
 
-                string zipPath = Path.Combine(tempPath, "inject.zip");
-
-                if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
-                {
-                    _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
-                }
-
-                try
-                {
-                    string apiUrl = "https://api.github.com/repos/OpenSteam001/OpenSteamTool/releases/latest";
-                    string jsonResponse = await _httpClient.GetStringAsync(apiUrl);
-
-                    string downloadUrl = GetReleaseDownloadUrl(jsonResponse);
-
-                    if (string.IsNullOrEmpty(downloadUrl))
+            switch (Mode)
+            {
+                case 0:
+                    try
                     {
-                        Console.WriteLine("Error: Could not find the stable -Release.zip link.");
-                        return;
-                    }
+                        string apiUrl = "https://api.github.com/repos/OpenSteam001/OpenSteamTool/releases/latest";
+                        string jsonResponse = await _httpClient.GetStringAsync(apiUrl);
+                        string downloadUrl = GetReleaseDownloadUrl(jsonResponse);
 
-                    byte[] fileData = await _httpClient.GetByteArrayAsync(downloadUrl);
-                    await File.WriteAllBytesAsync(zipPath, fileData);
-
-                    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
-                    {
-                        foreach (ZipArchiveEntry entry in archive.Entries)
+                        if (string.IsNullOrEmpty(downloadUrl))
                         {
-                            if (entry.FullName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
-                            {
-                                string destinationPath = Path.Combine(path, entry.Name);
+                            Console.WriteLine("Error: Could not find the stable -Release.zip link.");
+                            return;
+                        }
 
-                                entry.ExtractToFile(destinationPath, overwrite: true);
+                        byte[] fileData = await _httpClient.GetByteArrayAsync(downloadUrl);
+                        await File.WriteAllBytesAsync(zipPath, fileData);
+
+                        using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+                        {
+                            foreach (ZipArchiveEntry entry in archive.Entries)
+                            {
+                                if (entry.FullName.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    string destinationPath = Path.Combine(path, entry.Name);
+                                    entry.ExtractToFile(destinationPath, overwrite: true);
+                                }
                             }
                         }
+
+                        NotificationWindow win0 = new NotificationWindow("¡Steam Patched!", 2);
+                        win0.Show();
                     }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error en Modo 0: {ex.Message}");
+                    }
+                    break; 
 
-                    File.Delete(zipPath);
-
-                    NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
-                    win.Show();
-                }
-                catch (Exception ex)
-                {
-
-                    if (!Directory.Exists(tempPath)) Directory.CreateDirectory(tempPath);
-
-                    _httpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteamManager");
+                case 1:
                     try
                     {
                         byte[] fileData = await _httpClient.GetByteArrayAsync("https://github.com/Abrahamqb/OpenSteamMore-Dev/releases/latest/download/inject.zip");
-
                         await File.WriteAllBytesAsync(zipPath, fileData);
 
                         ZipFile.ExtractToDirectory(zipPath, path, true);
 
-                        File.Delete(zipPath);
-
-                        NotificationWindow win = new NotificationWindow("¡Steam Patched!", 2);
-                        win.Show();
-                    } catch { }
-                }
+                        NotificationWindow win1 = new NotificationWindow("¡Steam Patched!", 2);
+                        win1.Show();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error en Modo 1: {ex.Message}");
+                    }
+                    break; 
             }
+
+            try
+            {
+                if (File.Exists(zipPath)) File.Delete(zipPath);
+                if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
+            }
+            catch { }
         }
     }
 }

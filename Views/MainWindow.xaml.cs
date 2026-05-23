@@ -34,7 +34,11 @@ namespace OpenSteam.Views
             if (Properties.Settings.Default.AutoPatchLaunch)
             {
                 Attach attach = new Attach();
-                _ = attach.PatchSteam(SteamUtils.GetSteamPath(), false);
+                if (Properties.Settings.Default.LuaPath == "Lua")
+                {
+                    _ = attach.PatchSteam(SteamUtils.GetSteamPath(), false, 0);
+                }
+                else { _ = attach.PatchSteam(SteamUtils.GetSteamPath(), false, 1); }
                 State();
             }
 
@@ -161,14 +165,19 @@ namespace OpenSteam.Views
                 }
             }
             Attach attach = new Attach();
-            await attach.PatchSteam(SteamUtils.GetSteamPath(), false);
+            if (Properties.Settings.Default.LuaPath == "Lua")
+            {
+                await attach.PatchSteam(SteamUtils.GetSteamPath(), false, 0);
+            }
+            else { await attach.PatchSteam(SteamUtils.GetSteamPath(), false, 1); }
+            
             State();
         }
 
         private async void DeletePatchButton_Click(object sender, RoutedEventArgs e)
         {
             Attach attach = new Attach();
-            await attach.PatchSteam(SteamUtils.GetSteamPath(), true);
+            await attach.PatchSteam(SteamUtils.GetSteamPath(), true, 0);
             State();
         }
 
@@ -210,7 +219,7 @@ namespace OpenSteam.Views
                 try
                 {
                     Attach attach = new Attach();
-                    attach.PatchSteam(SteamUtils.GetSteamPath(), true);
+                    attach.PatchSteam(SteamUtils.GetSteamPath(), true, 0);
                     State();
                 }
                 catch (Exception ex)

@@ -24,6 +24,7 @@
                         <TextBlock Foreground="#007ACC" FontWeight="Bold" FontSize="20" Margin="0,0,0,5" Text="important :D"/>
                         <TextBlock TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12" Text="This is a third-party program that modifies the Steam platform in various ways. For your security, it is recommended that you back up your Steam folder. To do this, go to Settings > Create a Backup."/>
                         <TextBlock TextWrapping="Wrap" Foreground="#AAAAAA" FontSize="12" Text="Thanks for using it, and we'll be adding new features soon. Good luck on your pirate adventure! 🏴‍☠️"/>
+                        <TextBlock TextWrapping="Wrap" Foreground="Red" FontSize="20" Text="VERY IMPORTANT. If any patch doesn't work, try switching between &quot;NEW&quot; and &quot;OLD&quot;."/>
                     </StackPanel>
                 </Border>
             </StackPanel>
