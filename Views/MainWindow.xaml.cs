@@ -49,12 +49,25 @@ namespace OpenSteam.Views
             DeleteAutoPatch_.IsChecked = Properties.Settings.Default.DeleteOnClose;
             DisableNFSWAlert_.IsChecked = Properties.Settings.Default.DisableNFSWAlert;
             DisableFilter_.IsChecked = Properties.Settings.Default.FilterManager;
-            VersionToggle.IsChecked = Properties.Settings.Default.LuaPath == "Lua";
+            //VersionToggle.IsChecked = Properties.Settings.Default.LuaPath == "Lua";
 
             //Config Archive
-            UpdateLuaFolders();
+            this.Loaded += MainWindow_Loaded;
 
 
+        }
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            if (Properties.Settings.Default.LuaPath == "Lua")
+            {
+                VersionToggle.IsChecked = true;
+            }
+            else
+            {
+                VersionToggle.IsChecked = false;
+                UpdateLuaFolders();
+            }
         }
         public void ShowInitialMessage()
         {
@@ -348,6 +361,7 @@ namespace OpenSteam.Views
 
         private void VersionToggle_Checked(object sender, RoutedEventArgs e)
         {
+            if (!this.IsLoaded || VersionToggle == null) return;
             UpdateLuaFolders();
         }
     }
