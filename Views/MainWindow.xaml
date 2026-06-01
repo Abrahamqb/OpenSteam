@@ -133,7 +133,7 @@
 
                             <!-- Version Switch -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                                <TextBlock Text="OLD" Foreground="#44FFFFFF" FontWeight="ExtraBold" FontSize="11" VerticalAlignment="Center" Margin="0,0,10,0">
+                                <TextBlock x:Name="DefaultTxt" Text="Default" Foreground="#FF007ACC" FontWeight="ExtraBold" FontSize="11" VerticalAlignment="Center" Margin="0,0,10,0">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>
@@ -145,9 +145,9 @@
                                     </TextBlock.Style>
                                 </TextBlock>
                                 
-                                <CheckBox x:Name="VersionToggle" Style="{StaticResource ToggleSwitchStyle}" IsChecked="True" VerticalAlignment="Center" Width="40" Checked="VersionToggle_Checked" Unchecked="VersionToggle_Checked"/>
-                                
-                                <TextBlock Text="NEW" Foreground="#FF007ACC" FontWeight="ExtraBold" FontSize="11" VerticalAlignment="Center" Margin="10,0,0,0">
+                                <CheckBox x:Name="VersionToggle" Style="{StaticResource ToggleSwitchStyle}" IsChecked="False" VerticalAlignment="Center" Width="40" Checked="VersionToggle_Checked" Unchecked="VersionToggle_Checked"/>
+
+                                <TextBlock x:Name="AlternativeTxt" Text="Alternative" Foreground="#3FFFFFFF" FontWeight="ExtraBold" FontSize="11" VerticalAlignment="Center" Margin="10,0,0,0">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>

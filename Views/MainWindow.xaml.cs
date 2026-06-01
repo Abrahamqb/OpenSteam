@@ -244,7 +244,8 @@ namespace OpenSteam.Views
         private void UpdateLuaFolders()
         {
             if (VersionToggle == null) return;
-
+            Color Transparent = Color.FromArgb(25, 255, 255, 255);
+            Color Default = Color.FromArgb(255, 0, 122, 204);
             try
             {
                 string steamPath = SteamUtils.GetSteamPath();
@@ -261,6 +262,8 @@ namespace OpenSteam.Views
 
                 if (VersionToggle.IsChecked == true)
                 {
+                    DefaultTxt.Foreground = new SolidColorBrush(Transparent);
+                    AlternativeTxt.Foreground = new SolidColorBrush(Default);
                     Properties.Settings.Default.LuaPath = "Lua";
                     Properties.Settings.Default.Save();
 
@@ -276,6 +279,8 @@ namespace OpenSteam.Views
                 }
                 else
                 {
+                    DefaultTxt.Foreground = new SolidColorBrush(Default);
+                    AlternativeTxt.Foreground = new SolidColorBrush(Transparent);
                     Properties.Settings.Default.LuaPath = "stplug-in";
                     Properties.Settings.Default.Save();
 
