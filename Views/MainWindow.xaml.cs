@@ -177,6 +177,7 @@ namespace OpenSteam.Views
                     Console.WriteLine("Error: " + ex.Message);
                 }
             }
+            SteamUtils.Reset();
             Attach attach = new Attach();
             if (Properties.Settings.Default.LuaPath == "Lua")
             {
