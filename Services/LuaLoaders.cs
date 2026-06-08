@@ -193,46 +193,6 @@ namespace OpenSteam.Services
             {
                 int appid = int.Parse(ID);
                 var lua = await SteamLuaGenerator(appid, luaPathSteam);
-                /*string fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/" + ID;
-                byte[] zipBytes = await _instanceHttpClient.GetByteArrayAsync(fullLink);
-                await File.WriteAllBytesAsync(tempZip, zipBytes);
-
-                await Task.Run(() =>
-                {
-                    if (!Directory.Exists(luaPathSteam))
-                        Directory.CreateDirectory(luaPathSteam);
-
-                    if (!Directory.Exists(ManifestPathSteam))
-                        Directory.CreateDirectory(ManifestPathSteam);
-
-                    string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
-
-                    string extractPath = Path.Combine(Path.GetTempPath(), "Extract_" + ID);
-                    if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
-
-                    ZipFile.ExtractToDirectory(tempZip, extractPath);
-
-                    string FinalExtractedFolder = Directory.GetDirectories(extractPath).FirstOrDefault() ?? extractPath;
-
-                    string[] Manifest = Directory.GetFiles(FinalExtractedFolder, "*.manifest", SearchOption.AllDirectories);
-                    string[] files = Directory.GetFiles(FinalExtractedFolder, "*.lua", SearchOption.AllDirectories);
-
-                    if (files.Length > 0)
-                    {
-                        if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
-                        File.Move(files[0], finalLuaFile);
-                    }
-                    if (Manifest.Length > 0)
-                    {
-                        foreach (string manifest in Manifest)
-                        {
-                            string destManifest = Path.Combine(ManifestPathSteam, Path.GetFileName(manifest));
-                            if (File.Exists(destManifest)) File.Delete(destManifest);
-                            File.Move(manifest, destManifest);
-                        }
-                    }
-                    Directory.Delete(extractPath, true);
-                });*/
 
                 var result = await SteamUtils.FixManifests(path);
 

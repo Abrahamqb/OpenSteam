@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using OpenSteam.Views;
 
 namespace OpenSteam.Services
 {
@@ -17,6 +18,13 @@ namespace OpenSteam.Services
 
         public static async Task GetFixes(string gameName, string password)
         {
+
+            //Alert
+            MessageBox.Show("If you receive a timeout error, it's because the API backend isn't optimized; it's designed for testing purposes. You can continue ;)");
+            NotificationWindow win = new NotificationWindow("Downloading Online Fix", 5);
+            win.Show();
+
+
             string tempZip = Path.Combine(Path.GetTempPath(), $"of_fix_{Guid.NewGuid().ToString().Substring(0, 8)}.rar");
             string tempExtracted = Path.Combine(Path.GetTempPath(), "of_temp_extract");
 
@@ -80,6 +88,8 @@ namespace OpenSteam.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}");
+                NotificationWindow Error = new NotificationWindow("Try disabling your antivirus.", 5);
+                Error.ShowDialog();
             }
             finally
             {
