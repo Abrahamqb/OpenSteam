@@ -24,7 +24,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="LuaPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Lua</Value>
+      <Value Profile="(Default)">stplug-in</Value>
     </Setting>
   </Settings>
 </SettingsFile>

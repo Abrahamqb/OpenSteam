@@ -109,7 +109,7 @@ namespace OpenSteam.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Lua")]
+        [global::System.Configuration.DefaultSettingValueAttribute("stplug-in")]
         public string LuaPath {
             get {
                 return ((string)(this["LuaPath"]));
