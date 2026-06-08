@@ -33,7 +33,8 @@ It also features a **manual installation section**, so you can install scripts t
 ## Technologies Used
 
 - **C#**
-- **Native libraries and modified DLLs** (responsible for injection)
+- **Native libraries and modified DLLs**
+-  **New Dll by** https://github.com/OpenSteam001/OpenSteamTool 
 - **SOLVED by** openlua.cloud **and** steamproof.net. Thank you for the solution to the Connection Error.
 
 ---

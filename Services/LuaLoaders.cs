@@ -1,14 +1,12 @@
 ﻿using Microsoft.Win32;
 using System.IO;
-using System.IO.Compression;
 using System.Net.Http;
-using System.Windows;
-using System;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using System.Windows;
+using OpenSteam.Views;
 
-namespace OpenSteam.Service
+namespace OpenSteam.Services
 {
     public class LuaLoaders
     {
@@ -22,7 +20,7 @@ namespace OpenSteam.Service
                 MessageBox.Show("The Steam path was not detected.");
                 return;
             }
-            string luaPathSteam = Path.Combine(path, "config", "stplug-in");
+            string luaPathSteam = Path.Combine(path, "config", Properties.Settings.Default.LuaPath);
             OpenFileDialog luaLoader = new OpenFileDialog
             {
                 Filter = "Lua Files|*.lua",
@@ -40,6 +38,7 @@ namespace OpenSteam.Service
 
                     string destinationFile = Path.Combine(luaPathSteam, luaLoader.SafeFileName);
                     File.Copy(luaLoader.FileName, destinationFile, true);
+                    SteamUtils.FixManifests(SteamUtils.GetSteamPath());
                     NotificationWindow win = new NotificationWindow("¡Lua successfully loaded!", 2);
                     win.Show();
                 }
@@ -56,7 +55,6 @@ namespace OpenSteam.Service
 
         public static async Task<string> SteamLuaGenerator(int appId, string path, int cacheDays = 7)
         {
-            // Use the static HttpClient instance
             string apiUrl = $"https://api.steamproof.net/apps/depots?ids={appId}";
             string apiJson = await _staticHttpClient.GetStringAsync(apiUrl);
 
@@ -64,9 +62,14 @@ namespace OpenSteam.Service
             Directory.CreateDirectory(cacheDir);
 
             string cacheFile = Path.Combine(cacheDir, "depotkeys.json");
-            string keysJson;
-            string keysUrl = "https://gitlab.com/steamautocracks/manifesthub/-/raw/main/depotkeys.json";
 
+            string[] keysUrls = new[]
+            {
+                "https://gitlab.com/steamautocracks/manifesthub/-/raw/main/depotkeys.json",
+                "https://api.993499094.xyz/depotkeys.json"
+            };
+
+            var depotKeys = new Dictionary<string, string>();
             bool shouldRefresh = true;
 
             if (File.Exists(cacheFile))
@@ -76,33 +79,55 @@ namespace OpenSteam.Service
 
                 if (!isExpired)
                 {
-                    keysJson = await File.ReadAllTextAsync(cacheFile, Encoding.UTF8);
-                    shouldRefresh = false;
-                }
-                else
-                {
-                    keysJson = string.Empty;
+                    try
+                    {
+                        string cachedJson = await File.ReadAllTextAsync(cacheFile, Encoding.UTF8);
+                        depotKeys = JsonSerializer.Deserialize<Dictionary<string, string>>(cachedJson)
+                                    ?? new Dictionary<string, string>();
+                        shouldRefresh = false;
+                    }
+                    catch
+                    {
+                        shouldRefresh = true;
+                    }
                 }
             }
-            else
-            {
-                keysJson = string.Empty;
-            }
+
 
             if (shouldRefresh)
             {
-                keysJson = await _staticHttpClient.GetStringAsync(keysUrl);
-                await File.WriteAllTextAsync(cacheFile, keysJson, Encoding.UTF8);
-            }
 
-            var depotKeys = JsonSerializer.Deserialize<Dictionary<string, string>>(keysJson)
-                            ?? new Dictionary<string, string>();
+                foreach (string url in keysUrls)
+                {
+                    try
+                    {
+                        string jsonFromServer = await _staticHttpClient.GetStringAsync(url);
+                        var downloadedKeys = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonFromServer);
+
+                        if (downloadedKeys != null)
+                        {
+                            foreach (var kvp in downloadedKeys)
+                            {
+                                depotKeys.TryAdd(kvp.Key, kvp.Value);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+
+                string finalCacheJson = JsonSerializer.Serialize(depotKeys);
+                await File.WriteAllTextAsync(cacheFile, finalCacheJson, Encoding.UTF8);
+            }
 
             using var doc = JsonDocument.Parse(apiJson);
 
             var apps = doc.RootElement.GetProperty("apps");
             if (apps.GetArrayLength() == 0)
-                throw new Exception("La API no devolvió apps.");
+                throw new Exception("API NOT WORK");
 
             var app = apps[0];
             var depots = app.GetProperty("depots");
@@ -154,13 +179,13 @@ namespace OpenSteam.Service
 
             return sb.ToString();
         }
-        
+
         public async Task OnlineLoad(string ID, string path)
         {
             // Use the instance HttpClient
             _instanceHttpClient.DefaultRequestHeaders.Add("User-Agent", "OpenSteam-Manager/1.0");
 
-            string luaPathSteam = Path.Combine(path, "config", "stplug-in");
+            string luaPathSteam = Path.Combine(path, "config", Properties.Settings.Default.LuaPath);
             string ManifestPathSteam = Path.Combine(path, "depotcache");
             string tempZip = Path.Combine(Path.GetTempPath(), $"Lua_{ID}.zip");
 
@@ -168,46 +193,6 @@ namespace OpenSteam.Service
             {
                 int appid = int.Parse(ID);
                 var lua = await SteamLuaGenerator(appid, luaPathSteam);
-                /*string fullLink = "https://codeload.github.com/SteamAutoCracks/ManifestHub/zip/refs/heads/" + ID;
-                byte[] zipBytes = await _instanceHttpClient.GetByteArrayAsync(fullLink);
-                await File.WriteAllBytesAsync(tempZip, zipBytes);
-
-                await Task.Run(() =>
-                {
-                    if (!Directory.Exists(luaPathSteam))
-                        Directory.CreateDirectory(luaPathSteam);
-
-                    if (!Directory.Exists(ManifestPathSteam))
-                        Directory.CreateDirectory(ManifestPathSteam);
-
-                    string finalLuaFile = Path.Combine(luaPathSteam, $"{ID}.lua");
-
-                    string extractPath = Path.Combine(Path.GetTempPath(), "Extract_" + ID);
-                    if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
-
-                    ZipFile.ExtractToDirectory(tempZip, extractPath);
-
-                    string FinalExtractedFolder = Directory.GetDirectories(extractPath).FirstOrDefault() ?? extractPath;
-
-                    string[] Manifest = Directory.GetFiles(FinalExtractedFolder, "*.manifest", SearchOption.AllDirectories);
-                    string[] files = Directory.GetFiles(FinalExtractedFolder, "*.lua", SearchOption.AllDirectories);
-
-                    if (files.Length > 0)
-                    {
-                        if (File.Exists(finalLuaFile)) File.Delete(finalLuaFile);
-                        File.Move(files[0], finalLuaFile);
-                    }
-                    if (Manifest.Length > 0)
-                    {
-                        foreach (string manifest in Manifest)
-                        {
-                            string destManifest = Path.Combine(ManifestPathSteam, Path.GetFileName(manifest));
-                            if (File.Exists(destManifest)) File.Delete(destManifest);
-                            File.Move(manifest, destManifest);
-                        }
-                    }
-                    Directory.Delete(extractPath, true);
-                });*/
 
                 var result = await SteamUtils.FixManifests(path);
 
