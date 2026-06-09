@@ -8,15 +8,15 @@ It also features a **manual installation section**, so you can install scripts t
 
 ![Status](https://img.shields.io/badge/status-release-green)
 ![License](https://img.shields.io/badge/license-GPL-green)
-![Version](https://img.shields.io/badge/version-2.2.0-blue)
+![Version](https://img.shields.io/badge/version-3.0.0-blue)
 
 ---
 
 ## Preview
 
-![Project Preview](https://i.postimg.cc/C57NwqFC/v2.png)
+![Project Preview](https://private-user-images.githubusercontent.com/90818635/604705484-bf15c8c9-4221-4456-b5ad-09781fe9cab8.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODA5NjYzOTQsIm5iZiI6MTc4MDk2NjA5NCwicGF0aCI6Ii85MDgxODYzNS82MDQ3MDU0ODQtYmYxNWM4YzktNDIyMS00NDU2LWI1YWQtMDk3ODFmZTljYWI4LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA2MDklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNjA5VDAwNDgxNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTgxYTEzZjVjYjFhZjg3ZDliOWJlYjEzODVkMDg1ZDY0YjJmODk4YzUxNjBjZDUwMDc5ZWI4NWY5ZjM4MWIyN2EmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRnBuZyJ9.0Q2nhQYwiNM84FlXdJRLwd2yVjuaPXB4tC0hOb7LaOs)
 
-> Reference version: **v2.0.0**.
+> Reference version: **v3.0.0**.
 
 ---
 
@@ -34,7 +34,7 @@ It also features a **manual installation section**, so you can install scripts t
 
 - **C#**
 - **Native libraries and modified DLLs**
--  **New Dll by** https://github.com/OpenSteam001/OpenSteamTool 
+-  **Alternative Dll by** https://github.com/OpenSteam001/OpenSteamTool 
 - **SOLVED by** openlua.cloud **and** steamproof.net. Thank you for the solution to the Connection Error.
 
 ---
