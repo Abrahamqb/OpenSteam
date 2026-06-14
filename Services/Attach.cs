@@ -55,6 +55,7 @@ public class Attach
             {
             "xinput1_4.dll",
             "hid.dll",
+            "wtsapi32.dll",
             "dwmapi.dll",
             "OpenSteamTool.dll"
         };
